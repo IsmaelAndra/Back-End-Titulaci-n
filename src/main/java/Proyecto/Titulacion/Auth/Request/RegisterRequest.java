@@ -12,15 +12,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-    String photo_user;
-    String name_user;
-    String username;
-    String lastname_user;
-    LocalDate dateofbirth_user;
-    String gender_user;
-    String address_user;
-    Integer phone_user;
-    String email_user;
-    String password;
-    String pass_verification_user;
+    private String photo_user;
+    private String name_user;
+    private String username;
+    private String lastname_user;
+    private LocalDate dateofbirth_user;
+    private String gender_user;
+    private String address_user;
+    private Integer phone_user;
+    private String email_user;
+    private String password;
+    private String pass_verification_user;
+    private String role;
 }

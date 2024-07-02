@@ -15,6 +15,8 @@ import Proyecto.Titulacion.User.Rol.Rol;
 import Proyecto.Titulacion.User.Rol.RolRepository;
 import Proyecto.Titulacion.User.User.User;
 import Proyecto.Titulacion.User.User.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,23 +28,33 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request, HttpServletResponse response) {
         try {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        String token = jwtService.getToken(user);
-        return AuthResponse.builder()
-                .token(token)
-                .build();
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+            String token = jwtService.getToken(user);
+
+            Cookie jwtCookie = new Cookie("jwt_token", token);
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(true); // solo en HTTPS
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(24 * 60 * 60); // 1 día
+            response.addCookie(jwtCookie);
+
+            return AuthResponse.builder()
+                    .token(token)
+                    .build();
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid username or password", e);
         }
     }
 
-    public AuthResponse register(RegisterRequest request) {
-        Rol userRole = rolRepository.findByNamerol("USER")
-                .orElseThrow(() -> new RuntimeException("Role not found: USER"));
-        
+    public AuthResponse register(RegisterRequest request, HttpServletResponse response) {
+        String roleName = request.getRole();
+        Rol userRole = rolRepository.findByNamerol(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         String encodedPassword_Veri = passwordEncoder.encode(request.getPass_verification_user());
 
@@ -62,6 +74,16 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+
+        String token = jwtService.getToken(user);
+
+        // Agregar cookie con el token
+        Cookie jwtCookie = new Cookie("jwt_token", token);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(true); // Asegúrate de usar HTTPS
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(24 * 60 * 60); // Expira en 1 día
+        response.addCookie(jwtCookie);
 
         return AuthResponse.builder()
                 .token(jwtService.getToken(user))

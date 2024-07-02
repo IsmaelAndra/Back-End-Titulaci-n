@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import Proyecto.Titulacion.Auth.Services.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                Cookie jwtCookie = new Cookie("jwt_token", token);
+                jwtCookie.setHttpOnly(true);
+                jwtCookie.setSecure(true); // solo en HTTPS
+                jwtCookie.setPath("/");
+                jwtCookie.setMaxAge(24 * 60 * 60); // 1 día
+                response.addCookie(jwtCookie);
             }
         }
 

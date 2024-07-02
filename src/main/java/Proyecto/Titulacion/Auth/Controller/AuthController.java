@@ -12,6 +12,7 @@ import Proyecto.Titulacion.Auth.Request.LoginRequest;
 import Proyecto.Titulacion.Auth.Request.RegisterRequest;
 import Proyecto.Titulacion.Auth.Response.AuthResponse;
 import Proyecto.Titulacion.Auth.Services.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,14 +24,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(value="login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request)
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request, HttpServletResponse response)
     {
-        return ResponseEntity.ok(authService.login(request));
+        return ResponseEntity.ok(authService.login(request, response));
     }
 
     @PostMapping(value="register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request)
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request, HttpServletResponse response)
     {
-        return ResponseEntity.ok(authService.register(request));
+        return ResponseEntity.ok(authService.register(request, response));
     }
 }

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Field;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,31 +29,37 @@ public class ContactController {
     ContactService service;
 
     @GetMapping("/{id}/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Contact findById( @PathVariable long id ){
         return service.findById(id);
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public List<Contact> findAll() {
         return service.findAll();
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
     public Contact save( @RequestBody Contact entitiy ){
         return service.save(entitiy);
     }
     
     @PutMapping("/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Contact update ( @RequestBody Contact entity){
         return service.save(entity);
     }
 
     @DeleteMapping("/{id}/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteById( @PathVariable long id ){
         service.deleteById(id);
     }
 
-      @PatchMapping("/{id}/")
+    @PatchMapping("/{id}/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Contact partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
 
         Contact entity = findById(id);

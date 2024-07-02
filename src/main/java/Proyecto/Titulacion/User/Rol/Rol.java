@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 public class Rol {
     public static final String USER = "USER";
     public static final String ADMIN = "ADMIN";
+    public static final String EMPRENDEDOR = "EMPRENDEDOR";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +30,4 @@ public class Rol {
     private String namerol;
     @Column(length = 100)
     private String description_rol;
-
-    // @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
-    // private List<User> user;
 }

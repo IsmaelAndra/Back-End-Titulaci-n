@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Field;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,39 +22,45 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @RestController
 @RequestMapping("/api/achievenment")
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 public class AchievenmentController {
 
     @Autowired
     AchievenmentService service;
 
     @GetMapping("/{id}/")
-    public Achievenment findById( @PathVariable long id ){
+    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
+    public Achievenment findById(@PathVariable long id) {
         return service.findById(id);
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Achievenment> findAll() {
         return service.findAll();
     }
 
     @PostMapping("/")
-    public Achievenment save( @RequestBody Achievenment entitiy ){
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
+    public Achievenment save(@RequestBody Achievenment entitiy) {
         return service.save(entitiy);
     }
-    
+
     @PutMapping("/")
-    public Achievenment update ( @RequestBody Achievenment entity){
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
+    public Achievenment update(@RequestBody Achievenment entity) {
         return service.save(entity);
     }
 
     @DeleteMapping("/{id}/")
-    public void deleteById( @PathVariable long id ){
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
+    public void deleteById(@PathVariable long id) {
         service.deleteById(id);
     }
 
-      @PatchMapping("/{id}/")
-    public Achievenment partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
+    @PatchMapping("/{id}/")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
+    public Achievenment partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields) {
 
         Achievenment entity = findById(id);
 
@@ -62,7 +68,7 @@ public class AchievenmentController {
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
-            
+
             // utiliza reflection para establecer el valor del campo en la entidad
             try {
                 Field campoEntidad = Achievenment.class.getDeclaredField(fieldName);

@@ -40,7 +40,7 @@ public class User implements UserDetails {
     @Column(length = 30)
     private String name_user;
     @Column(length = 30, unique = true)
-    private String username;
+    private String username; // NO TOCAR //
     @Column(length = 30)
     private String lastname_user;
     @Column

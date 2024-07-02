@@ -3,6 +3,7 @@ package Proyecto.Titulacion.User.Rol;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,44 +17,44 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping("/api/rol/")
-@CrossOrigin({"*"})
+@RequestMapping("/api/rol")
+@CrossOrigin({ "*" })
 public class RolController {
-    @Autowired 
+    @Autowired
     private RolService rolService;
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Crear un Rol")
-    public Rol save(@RequestBody Rol entity)
-    {
+    public Rol save(@RequestBody Rol entity) {
         return rolService.save(entity);
     }
 
     @GetMapping("/{id_rol}/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Obtener un Rol")
-    public Rol findRol(@PathVariable long id_rol)
-    {
+    public Rol findRol(@PathVariable long id_rol) {
         return rolService.findById(id_rol);
     }
-    
+
     @PutMapping("/{id_rol}/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Actualizar un Rol")
-    public Rol update(@RequestBody Rol entity)
-    {
+    public Rol update(@RequestBody Rol entity) {
         return rolService.save(entity);
     }
 
     @DeleteMapping("/{id_rol}/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Eliminar un Rol")
-    public void deleteByID(@PathVariable long id_rol)
-    {
+    public void deleteByID(@PathVariable long id_rol) {
         rolService.deleteByID(id_rol);
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Obtener todos los Roles")
-    public List<Rol> findAll()
-    {
+    public List<Rol> findAll() {
         return rolService.findAll();
     }
 }
