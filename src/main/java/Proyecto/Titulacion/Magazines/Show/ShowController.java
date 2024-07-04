@@ -20,44 +20,54 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/show")
 @CrossOrigin({"*"})
+@Tag(name = "Controller Show", description = "Table show")
 public class ShowController {
 
     @Autowired
     ShowService service;
 
+    @Operation(summary = "gets an show for your id, requires hasAnyRole")
     @GetMapping("/{id}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Show findById( @PathVariable long id ){
         return service.findById(id);
     }
 
+    @Operation(summary = "Gets all shows, requires hasAnyRole")
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Show> findAll() {
         return service.findAll();
     }
 
+    @Operation(summary = "save an show, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Show save( @RequestBody Show entitiy ){
         return service.save(entitiy);
     }
     
-    @PutMapping("/")
+    @Operation(summary = "updates an show by its id, requires hasAnyRole(ADMIN)")
+    @PutMapping("/{id}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Show update ( @RequestBody Show entity){
         return service.save(entity);
     }
 
+    @Operation(summary = "removes an show by its id, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{id}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteById( @PathVariable long id ){
         service.deleteById(id);
     }
 
+    @Operation(summary = "partial updates an shows by its id, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{id}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Show partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){

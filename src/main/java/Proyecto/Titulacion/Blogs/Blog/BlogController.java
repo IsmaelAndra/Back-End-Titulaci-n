@@ -20,44 +20,54 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/blog")
 @CrossOrigin({"*"})
+@Tag(name = "Controller blog", description = "Table blogs")
 public class BlogController {
 
     @Autowired
     BlogService service;
 
+    @Operation(summary = "get a blog by its id, Requiere hasAnyRole")
     @GetMapping("/{id}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Blog findById( @PathVariable long id ){
         return service.findById(id);
     }
 
+    @Operation(summary = "gets all blogs, Requiere hasAnyRole")
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Blog> findAll() {
         return service.findAll();
     }
 
+    @Operation(summary = "save a blog, Requiere hasAnyRole")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
     public Blog save( @RequestBody Blog entitiy ){
         return service.save(entitiy);
     }
     
-    @PutMapping("/")
+    @Operation(summary = "updates an blog by its id, Requiere hasAnyRole")
+    @PutMapping("/{id}/")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
     public Blog update ( @RequestBody Blog entity){
         return service.save(entity);
     }
 
+    @Operation(summary = "removes a blog by its id, Requiere hasAnyRole")
     @DeleteMapping("/{id}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public void deleteById( @PathVariable long id ){
         service.deleteById(id);
     }
 
+    @Operation(summary = "partial update an blog by its id, Requiere hasAnyRole")
     @PatchMapping("/{id}/")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
     public Blog partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){

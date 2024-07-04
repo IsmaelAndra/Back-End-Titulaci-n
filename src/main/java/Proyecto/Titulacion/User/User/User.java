@@ -1,14 +1,11 @@
 package Proyecto.Titulacion.User.User;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import Proyecto.Titulacion.User.Rol.Rol;
 import jakarta.persistence.Column;
@@ -43,13 +40,6 @@ public class User implements UserDetails {
     private String username; // NO TOCAR //
     @Column(length = 30)
     private String lastname_user;
-    @Column
-    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    private LocalDate dateofbirth_user;
-    @Column(length = 30)
-    private String gender_user;
-    @Column(length = 30)
-    private String address_user;
     @Column(length = 9, unique = true)
     private Integer phone_user;
     @Column(length = 100, unique = true)

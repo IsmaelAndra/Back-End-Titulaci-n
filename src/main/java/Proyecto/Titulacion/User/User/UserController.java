@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/user/")
+@Tag(name = "Controller Users (Usuarios)", description = "Tabla user")
 public class UserController {
     @Autowired 
     private UserService userService;

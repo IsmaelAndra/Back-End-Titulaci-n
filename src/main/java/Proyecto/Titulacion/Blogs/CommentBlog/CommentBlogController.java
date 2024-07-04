@@ -20,44 +20,54 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/entidad")
 @CrossOrigin({"*"})
+@Tag(name = "Controlador Authority (Permisos)", description = "Tabla authorities")
 public class CommentBlogController {
 
     @Autowired
     CommentBlogService service;
 
+    @Operation(summary = "gets an comment of blog for your id, Requiere hasAnyRole")
     @GetMapping("/{id}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public CommentBlog findById( @PathVariable long id ){
         return service.findById(id);
     }
 
+    @Operation(summary = "Gets all comments of blog, Requiere hasAnyRole")
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<CommentBlog> findAll() {
         return service.findAll();
     }
 
+    @Operation(summary = "save an comment blog, Requiere hasAnyRole")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
     public CommentBlog save( @RequestBody CommentBlog entitiy ){
         return service.save(entitiy);
     }
     
+    @Operation(summary = "updates an achievement by its id, requires hasAnyRole")
     @PutMapping("/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
     public CommentBlog update ( @RequestBody CommentBlog entity){
         return service.save(entity);
     }
 
+    @Operation(summary = "removes an comment blog by its id, requires hasAnyRole")
     @DeleteMapping("/{id}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public void deleteById( @PathVariable long id ){
         service.deleteById(id);
     }
 
+    @Operation(summary = "partial updates an cooment blog by its id, requires hasAnyRole")
     @PatchMapping("/{id}/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
     public CommentBlog partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){

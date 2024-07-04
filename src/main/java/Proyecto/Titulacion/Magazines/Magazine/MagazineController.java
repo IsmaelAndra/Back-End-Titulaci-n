@@ -20,44 +20,54 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/magazine")
 @CrossOrigin({"*"})
+@Tag(name = "Controller Magazine (Revista)", description = "Table magazine")
 public class MagazineController {
 
     @Autowired
     MagazineService service;
 
+    @Operation(summary = "gets an magazine for your id, requires hasAnyRole")
     @GetMapping("/{id}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Magazine findById( @PathVariable long id ){
         return service.findById(id);
     }
 
+    @Operation(summary = "Gets all magazine, requires hasAnyRole")
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Magazine> findAll() {
         return service.findAll();
     }
 
+    @Operation(summary = "save an magazine, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Magazine save( @RequestBody Magazine entitiy ){
         return service.save(entitiy);
     }
     
-    @PutMapping("/")
+    @Operation(summary = "updates an magazine by its id, requires hasAnyRole(ADMIN)")
+    @PutMapping("/{id}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Magazine update ( @RequestBody Magazine entity){
         return service.save(entity);
     }
 
+    @Operation(summary = "removes an magazine by its id, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{id}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteById( @PathVariable long id ){
         service.deleteById(id);
     }
 
+    @Operation(summary = "partial updates an magazine by its id, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{id}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Magazine partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
