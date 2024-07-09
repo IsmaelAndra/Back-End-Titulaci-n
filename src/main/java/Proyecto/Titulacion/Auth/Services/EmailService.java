@@ -15,7 +15,7 @@
 //         message.setTo(to);
 //         message.setSubject(subject);
 //         message.setText(text);
-//         message.setFrom("ismael.jhonny.andrade.castillo@gmail.com");
+//         message.setFrom("correo");
 //         mailSender.send(message);
 //     }
 // }
