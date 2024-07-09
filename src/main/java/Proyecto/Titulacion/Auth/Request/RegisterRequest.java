@@ -18,5 +18,7 @@ public class RegisterRequest {
     private String emailUser;
     private String password;
     private String passVerificationUser;
+    private boolean verified;
+    private String verificationCode;
     private String role;
 }

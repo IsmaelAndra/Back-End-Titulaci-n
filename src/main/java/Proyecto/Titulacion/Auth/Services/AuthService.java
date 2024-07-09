@@ -1,5 +1,8 @@
 package Proyecto.Titulacion.Auth.Services;
 
+import java.util.Optional;
+import java.util.Random;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,6 +60,7 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         String encodedPassword_Veri = passwordEncoder.encode(request.getPassVerificationUser());
+        String verificationCode = generateVerificationCode();
 
         User user = User.builder()
                 .photoUser(request.getPhotoUser())
@@ -67,23 +71,36 @@ public class AuthService {
                 .emailUser(request.getEmailUser())
                 .password(encodedPassword)
                 .passVerificationUser(encodedPassword_Veri)
+                .verified(false)
+                .verificationCode(verificationCode)
                 .rol(userRole)
                 .build();
 
         userRepository.save(user);
 
-        String token = jwtService.getToken(user);
-
-        // Agregar cookie con el token
-        Cookie jwtCookie = new Cookie("jwt_token", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true); // Asegúrate de usar HTTPS
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(24 * 60 * 60); // Expira en 1 día
-        response.addCookie(jwtCookie);
-
         return AuthResponse.builder()
                 .token(jwtService.getToken(user))
                 .build();
+    }
+    
+    public boolean verifyCode(String username, String verificationCode) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getVerificationCode().equals(verificationCode)) {
+                user.setVerified(true);
+                user.setVerificationCode(null);
+                userRepository.save(user);
+                return true;
+            } else {
+                return false; // Código de verificación incorrecto
+            }
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    private String generateVerificationCode() {
+        return String.valueOf(new Random().nextInt(900000) + 100000);
     }
 }

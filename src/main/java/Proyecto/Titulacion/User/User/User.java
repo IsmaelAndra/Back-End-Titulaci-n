@@ -57,6 +57,12 @@ public class User implements UserDetails {
     @Column
     private String passVerificationUser;
 
+    @Column
+    private boolean verified;
+
+    @Column(length = 6)
+    private String verificationCode;
+
     @ManyToOne
     @JoinColumn(name = "idRol", referencedColumnName = "idRol")
     private Rol rol;
@@ -97,6 +103,14 @@ public class User implements UserDetails {
         return passVerificationUser;
     }
 
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
     public Rol getRol() {
         return rol;
     }
@@ -135,6 +149,14 @@ public class User implements UserDetails {
 
     public void setPassVerificationUser(String passVerificationUser) {
         this.passVerificationUser = passVerificationUser;
+    }
+
+    public void setVerified() {
+        this.verified = false;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 
     public void setRol(Rol rol) {
