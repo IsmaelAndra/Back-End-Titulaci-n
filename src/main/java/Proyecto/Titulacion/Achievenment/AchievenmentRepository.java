@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Achievenment;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface AchievenmentRepository extends CrudRepository<Achievenment, Long>{
-    List<Achievenment> findAll();
+public interface AchievenmentRepository extends JpaRepository<Achievenment, Long>{
+    Page<Achievenment> findByNameAchievementContaining(String nameAchieviement, Pageable pageable);
 }

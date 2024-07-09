@@ -14,17 +14,56 @@ import lombok.Data;
 @Entity
 public class Show {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_show;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idShow;
     @Column(length = 100)
-    private String title_show;
+    private String titleShow;
     @Column(length = 300)
-    private String description_show;
+    private String descriptionShow;
     @Column(length = 500)
-    private String url_image_show;
+    private String urlImageShow;
 
     @ManyToOne
-    @JoinColumn(name = "id_magazine", referencedColumnName="id_magazine")
+    @JoinColumn(name = "idMagazine", referencedColumnName="idMagazine")
     private Magazine magazine;
-            
+
+    public long getIdShow() {
+        return idShow;
+    }
+
+    public String getTitleShow() {
+        return titleShow;
+    }
+
+    public String getDescriptionShow() {
+        return descriptionShow;
+    }
+
+    public String getUrlImageShow() {
+        return urlImageShow;
+    }
+
+    public Magazine getMagazine() {
+        return magazine;
+    }
+
+    public void setIdShow(long idShow) {
+        this.idShow = idShow;
+    }
+
+    public void setTitleShow(String titleShow) {
+        this.titleShow = titleShow;
+    }
+
+    public void setDescriptionShow(String descriptionShow) {
+        this.descriptionShow = descriptionShow;
+    }
+
+    public void setUrlImageShow(String urlImageShow) {
+        this.urlImageShow = urlImageShow;
+    }
+
+    public void setMagazine(Magazine magazine) {
+        this.magazine = magazine;
+    }
 }

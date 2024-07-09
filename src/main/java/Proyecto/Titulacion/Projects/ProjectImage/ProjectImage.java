@@ -14,13 +14,37 @@ import lombok.Data;
 @Entity
 public class ProjectImage {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_proyect_image;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idProjectImage;
+
     @Column(length = 100)
-    private String url_proyect_image;
+    private String urlProjectImage;
 
     @ManyToOne
-    @JoinColumn(name = "id_student_proyect", referencedColumnName="id_student_proyect")
+    @JoinColumn(name = "idStudentProject", referencedColumnName="idStudentProject")
     private StudentProject studentProyect;
-            
+
+    public long getIdProjectImage() {
+        return idProjectImage;
+    }
+
+    public String getUrlProjectImage() {
+        return urlProjectImage;
+    }
+
+    public StudentProject getStudentProyect() {
+        return studentProyect;
+    }
+
+    public void setIdProjectImage(long idProjectImage) {
+        this.idProjectImage = idProjectImage;
+    }
+
+    public void setUrlProjectImage(String urlProjectImage) {
+        this.urlProjectImage = urlProjectImage;
+    }
+
+    public void setStudentProyect(StudentProject studentProyect) {
+        this.studentProyect = studentProyect;
+    }        
 }

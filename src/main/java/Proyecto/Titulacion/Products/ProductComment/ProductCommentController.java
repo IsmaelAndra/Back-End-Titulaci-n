@@ -20,18 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/productComment")
 @CrossOrigin({"*"})
+@Tag(name = "Controller Product Comment (Comentario de Producto)", description = "Table Product Comment")
 public class ProductCommentController {
 
     @Autowired
     ProductCommentService service;
 
-    @GetMapping("/{id}/")
+    @GetMapping("/{idProductComment}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public ProductComment findById( @PathVariable long id ){
-        return service.findById(id);
+    public ProductComment findById( @PathVariable long idProductComment ){
+        return service.findById(idProductComment);
     }
 
     @GetMapping("/")
@@ -52,35 +55,36 @@ public class ProductCommentController {
         return service.save(entity);
     }
 
-    @DeleteMapping("/{id}/")
+    @DeleteMapping("/{idProductComment}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public void deleteById( @PathVariable long id ){
-        service.deleteById(id);
+    public void deleteById( @PathVariable long idProductComment ){
+        service.deleteById(idProductComment);
     }
 
-    @PatchMapping("/{id}/")
+    @PatchMapping("/{idProductComment}/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
-    public ProductComment partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
+    public ProductComment partialUpdate(@PathVariable long idProductComment, @RequestBody Map<String, Object> fields){
 
-        ProductComment entity = findById(id);
+        ProductComment entity = findById(idProductComment);
 
-        // itera sobre los campos que se desean actualizar
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
             
-            // utiliza reflection para establecer el valor del campo en la entidad
             try {
                 Field campoEntidad = ProductComment.class.getDeclaredField(fieldName);
                 campoEntidad.setAccessible(true);
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                // maneja la excepción si ocurre algún error al acceder al campo
+            } catch (NoSuchFieldException ex) {
+                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad ProductComment", ex);
+            } catch (IllegalAccessException ex) {
+                throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
         return update(entity);
     }
-
 }

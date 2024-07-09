@@ -1,9 +1,11 @@
 package Proyecto.Titulacion.Products.Product;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import org.springframework.data.repository.CrudRepository;
-    
-public interface ProductRepository extends CrudRepository<Product, Long>{
-    List<Product> findAll();
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long>{
+    Page<Product> findByNameProductContaining(String nameProduct, Pageable pageable);
 }

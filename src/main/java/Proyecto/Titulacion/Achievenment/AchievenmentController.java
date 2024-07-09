@@ -5,6 +5,7 @@ import java.util.Map;
 import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,15 +30,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin({ "*" })
 @Tag(name = "Controller achievenment (Logros)", description = "Table achievements")
 public class AchievenmentController {
-
     @Autowired
     AchievenmentService service;
 
-    @Operation(summary = "gets an achievement for your id, requires hasAnyRole")
-    @GetMapping("/{id}/")
+    @Operation(summary = "gets an achievement for your idAchievement, requires hasAnyRole")
+    @GetMapping("/{idAchievement}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public Achievenment findById(@PathVariable long id) {
-        return service.findById(id);
+    public Achievenment findById(@PathVariable long idAchievement) {
+        return service.findById(idAchievement);
     }
 
     @Operation(summary = "Gets all achievements, requires hasAnyRole")
@@ -53,44 +54,65 @@ public class AchievenmentController {
         return service.save(entitiy);
     }
 
-    @Operation(summary = "updates an achievement by its id, requires hasAnyRole")
-    @PutMapping("/{id}/")
+    @Operation(summary = "updates an achievement by its idAchievement, requires hasAnyRole")
+    @PutMapping("/{idAchievement}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Achievenment update(@RequestBody Achievenment entity) {
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an achievement by its id, requires hasAnyRole")
-    @DeleteMapping("/{id}/")
+    @Operation(summary = "removes an achievement by its idAchievement, requires hasAnyRole")
+    @DeleteMapping("/{idAchievement}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public void deleteById(@PathVariable long id) {
-        service.deleteById(id);
+    public void deleteById(@PathVariable long idAchievement) {
+        service.deleteById(idAchievement);
     }
 
-    @Operation(summary = "partial update an achievement by its id, requires hasAnyRole")
-    @PatchMapping("/{id}/")
+    @Operation(summary = "partial update an achievement by its idAchievement, requires hasAnyRole")
+    @PatchMapping("/{idAchievement}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public Achievenment partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields) {
+    public Achievenment partialUpdate(@PathVariable long idAchievement, @RequestBody Map<String, Object> fields) {
 
-        Achievenment entity = findById(id);
+        Achievenment entity = findById(idAchievement);
 
-        // itera sobre los campos que se desean actualizar
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
 
-            // utiliza reflection para establecer el valor del campo en la entidad
             try {
                 Field campoEntidad = Achievenment.class.getDeclaredField(fieldName);
                 campoEntidad.setAccessible(true);
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                // maneja la excepción si ocurre algún error al acceder al campo
+            } catch (NoSuchFieldException ex) {
+                throw new IllegalArgumentException(
+                        "Campo '" + fieldName + "' no encontrado en la entidad Achievenment", ex);
+            } catch (IllegalAccessException ex) {
+                throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
         return update(entity);
     }
 
+    @GetMapping("/paginated")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
+    public Page<Achievenment> findPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idAchievement") String sortBy) {
+        return service.findPaginated(page, size, sortBy);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
+    public Page<Achievenment> findByNameAchievement(
+            @RequestParam String nameAchievement,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idAchievement") String sortBy) {
+        return service.findByNameAchievement(nameAchievement, page, size, sortBy);
+    }
 }

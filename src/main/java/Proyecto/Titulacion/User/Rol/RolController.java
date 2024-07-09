@@ -3,6 +3,7 @@ package Proyecto.Titulacion.User.Rol;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,25 +34,25 @@ public class RolController {
         return rolService.save(entity);
     }
 
-    @GetMapping("/{id_rol}/")
+    @GetMapping("/{idRol}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Obtener un Rol")
-    public Rol findRol(@PathVariable long id_rol) {
-        return rolService.findById(id_rol);
+    public Rol findRol(@PathVariable long idRol) {
+        return rolService.findById(idRol);
     }
 
-    @PutMapping("/{id_rol}/")
+    @PutMapping("/{idRol}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Actualizar un Rol")
     public Rol update(@RequestBody Rol entity) {
         return rolService.save(entity);
     }
 
-    @DeleteMapping("/{id_rol}/")
+    @DeleteMapping("/{idRol}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Eliminar un Rol")
-    public void deleteByID(@PathVariable long id_rol) {
-        rolService.deleteByID(id_rol);
+    public void deleteByID(@PathVariable long idRol) {
+        rolService.deleteByID(idRol);
     }
 
     @GetMapping("/")
@@ -58,5 +60,26 @@ public class RolController {
     @Operation(summary = "Obtener todos los Roles")
     public List<Rol> findAll() {
         return rolService.findAll();
+    }
+
+    @GetMapping("/paginated")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Operation(summary = "Obtener roles paginados")
+    public Page<Rol> findPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idRol") String sortBy) {
+        return rolService.findPaginated(page, size, sortBy);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Operation(summary = "Buscar roles por nombre")
+    public Page<Rol> findByNameRol(
+            @RequestParam String nameRol,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idRol") String sortBy) {
+        return rolService.findByNameRol(nameRol, page, size, sortBy);
     }
 }

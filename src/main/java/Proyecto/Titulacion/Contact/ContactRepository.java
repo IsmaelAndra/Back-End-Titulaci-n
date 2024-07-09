@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Contact;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface ContactRepository extends CrudRepository<Contact, Long>{
-    List<Contact> findAll();
+public interface ContactRepository extends JpaRepository<Contact, Long>{
+    Page<Contact> findByNameContactContaining(String nameContact, Pageable pageable);
 }

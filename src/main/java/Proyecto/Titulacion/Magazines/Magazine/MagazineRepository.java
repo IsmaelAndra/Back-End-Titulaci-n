@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Magazines.Magazine;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface MagazineRepository extends CrudRepository<Magazine, Long>{
-    List<Magazine> findAll();
+public interface MagazineRepository extends JpaRepository<Magazine, Long>{
+    Page<Magazine> findByNameMagazineContaining(String nameMagazine, Pageable pageable);
 }

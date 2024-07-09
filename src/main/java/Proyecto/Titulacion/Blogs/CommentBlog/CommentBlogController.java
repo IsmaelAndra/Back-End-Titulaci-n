@@ -32,11 +32,11 @@ public class CommentBlogController {
     @Autowired
     CommentBlogService service;
 
-    @Operation(summary = "gets an comment of blog for your id, Requiere hasAnyRole")
-    @GetMapping("/{id}/")
+    @Operation(summary = "gets an comment of blog for your idCommentBlog, Requiere hasAnyRole")
+    @GetMapping("/{idCommentBlog}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public CommentBlog findById( @PathVariable long id ){
-        return service.findById(id);
+    public CommentBlog findById( @PathVariable long idCommentBlog ){
+        return service.findById(idCommentBlog);
     }
 
     @Operation(summary = "Gets all comments of blog, Requiere hasAnyRole")
@@ -53,41 +53,44 @@ public class CommentBlogController {
         return service.save(entitiy);
     }
     
-    @Operation(summary = "updates an achievement by its id, requires hasAnyRole")
+    @Operation(summary = "updates an achievement by its idCommentBlog, requires hasAnyRole")
     @PutMapping("/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
     public CommentBlog update ( @RequestBody CommentBlog entity){
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an comment blog by its id, requires hasAnyRole")
-    @DeleteMapping("/{id}/")
+    @Operation(summary = "removes an comment blog by its idCommentBlog, requires hasAnyRole")
+    @DeleteMapping("/{idCommentBlog}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public void deleteById( @PathVariable long id ){
-        service.deleteById(id);
+    public void deleteById( @PathVariable long idCommentBlog ){
+        service.deleteById(idCommentBlog);
     }
 
-    @Operation(summary = "partial updates an cooment blog by its id, requires hasAnyRole")
-    @PatchMapping("/{id}/")
+    @Operation(summary = "partial updates an cooment blog by its idCommentBlog, requires hasAnyRole")
+    @PatchMapping("/{idCommentBlog}/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
-    public CommentBlog partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
+    public CommentBlog partialUpdate(@PathVariable long idCommentBlog, @RequestBody Map<String, Object> fields){
 
-        CommentBlog entity = findById(id);
+        CommentBlog entity = findById(idCommentBlog);
 
-        // itera sobre los campos que se desean actualizar
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
-            
-            // utiliza reflection para establecer el valor del campo en la entidad
+
             try {
                 Field campoEntidad = CommentBlog.class.getDeclaredField(fieldName);
                 campoEntidad.setAccessible(true);
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                // maneja la excepción si ocurre algún error al acceder al campo
+            } catch (NoSuchFieldException ex) {
+                throw new IllegalArgumentException(
+                        "Campo '" + fieldName + "' no encontrado en la entidad CommentBlog", ex);
+            } catch (IllegalAccessException ex) {
+                throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
         return update(entity);

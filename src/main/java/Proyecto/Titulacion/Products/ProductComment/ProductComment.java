@@ -14,13 +14,37 @@ import lombok.Data;
 @Entity
 public class ProductComment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_comment_product;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idProductComment;
+    
     @Column(length = 100)
-    private String content_comment_product;
+    private String contentProductComment;
 
     @ManyToOne
-    @JoinColumn(name = "id_product", referencedColumnName="id_product")
+    @JoinColumn(name = "idProduct", referencedColumnName="idProduct")
     private Product product;
-            
+
+    public long getIdProductComment() {
+        return idProductComment;
+    }
+
+    public String getContentProductComment() {
+        return contentProductComment;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setIdProductComment(long idProductComment) {
+        this.idProductComment = idProductComment;
+    }
+
+    public void setContentProductComment(String contentProductComment) {
+        this.contentProductComment = contentProductComment;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 }

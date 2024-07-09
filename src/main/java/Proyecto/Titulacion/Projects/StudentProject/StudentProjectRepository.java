@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Projects.StudentProject;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface StudentProjectRepository extends CrudRepository<StudentProject, Long>{
-    List<StudentProject> findAll();
+public interface StudentProjectRepository extends JpaRepository<StudentProject, Long>{
+    Page<StudentProject> findByNameStudentProjectContaining(String nameStudentProject, Pageable pageable);
 }

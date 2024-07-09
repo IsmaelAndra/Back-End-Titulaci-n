@@ -5,6 +5,8 @@ import java.util.Map;
 import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,63 +26,73 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @RequestMapping("/api/proyectImage")
 @CrossOrigin({"*"})
 public class ProjectImageController {
-
     @Autowired
     ProjectImageService service;
 
-    @GetMapping("/{id}/")
+    @GetMapping("/{idProjectImage}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public ProjectImage findById( @PathVariable long id ){
-        return service.findById(id);
+    public ResponseEntity<ProjectImage> findById(@PathVariable long idProjectImage) {
+        ProjectImage projectImage = service.findById(idProjectImage);
+        if (projectImage != null) {
+            return ResponseEntity.ok(projectImage);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public List<ProjectImage> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<ProjectImage>> findAll() {
+        List<ProjectImage> projectImages = service.findAll();
+        return ResponseEntity.ok(projectImages);
     }
 
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public ProjectImage save( @RequestBody ProjectImage entitiy ){
-        return service.save(entitiy);
+    public ResponseEntity<ProjectImage> save(@RequestBody ProjectImage entity) {
+        ProjectImage savedProjectImage = service.save(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProjectImage);
     }
     
     @PutMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public ProjectImage update ( @RequestBody ProjectImage entity){
-        return service.save(entity);
+    public ResponseEntity<ProjectImage> update(@RequestBody ProjectImage entity) {
+        ProjectImage updatedProjectImage = service.save(entity);
+        return ResponseEntity.ok(updatedProjectImage);
     }
 
-    @DeleteMapping("/{id}/")
+    @DeleteMapping("/{idProjectImage}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public void deleteById( @PathVariable long id ){
-        service.deleteById(id);
+    public ResponseEntity<Void> deleteById(@PathVariable long idProjectImage) {
+        service.deleteById(idProjectImage);
+        return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/")
+    @PatchMapping("/{idProjectImage}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public ProjectImage partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
-
-        ProjectImage entity = findById(id);
-
-        // itera sobre los campos que se desean actualizar
+    public ResponseEntity<ProjectImage> partialUpdate(@PathVariable long idProjectImage, @RequestBody Map<String, Object> fields) {
+        ProjectImage entity = service.findById(idProjectImage);
+        if (entity == null) {
+            return ResponseEntity.notFound().build();
+        }
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
-            
-            // utiliza reflection para establecer el valor del campo en la entidad
             try {
                 Field campoEntidad = ProjectImage.class.getDeclaredField(fieldName);
                 campoEntidad.setAccessible(true);
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                // maneja la excepción si ocurre algún error al acceder al campo
+            } catch (NoSuchFieldException ex) {
+                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad ProjectImage", ex);
+            } catch (IllegalAccessException ex) {
+                throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
-        return update(entity);
-    }
 
+        return ResponseEntity.ok(service.save(entity));
+    }
 }

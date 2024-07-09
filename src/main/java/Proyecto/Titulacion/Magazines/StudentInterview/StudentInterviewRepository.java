@@ -1,9 +1,11 @@
 package Proyecto.Titulacion.Magazines.StudentInterview;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import org.springframework.data.repository.CrudRepository;
-    
-public interface StudentInterviewRepository extends CrudRepository<StudentInterview, Long>{
-    List<StudentInterview> findAll();
+@Repository 
+public interface StudentInterviewRepository extends JpaRepository<StudentInterview, Long>{
+    Page<StudentInterview> findByNameStudentInterviewContaining(String nameStudentInterview, Pageable pageable);
 }

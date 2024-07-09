@@ -9,20 +9,53 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
-        
+
 @Data
 @Entity
 public class StudentInterview {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_student_interview;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idStudentInterview;
+
     @Column(length = 100)
-    private String name_student_interview;
+    private String nameStudentInterview;
+
     @Column(length = 300)
-    private String content_student_interview;
-    
+    private String contentStudentInterview;
     
     @ManyToOne
-    @JoinColumn(name = "id_magazine", referencedColumnName="id_magazine")
+    @JoinColumn(name = "idMagazine", referencedColumnName="idMagazine")
     private Magazine magazine;
+
+    public long getIdStudentInterview() {
+        return idStudentInterview;
+    }
+
+    public String getNameStudentInterview() {
+        return nameStudentInterview;
+    }
+
+    public String getContentStudentInterview() {
+        return contentStudentInterview;
+    }
+
+    public Magazine getMagazine() {
+        return magazine;
+    }
+
+    public void setIdStudentInterview(long idStudentInterview) {
+        this.idStudentInterview = idStudentInterview;
+    }
+
+    public void setNameStudentInterview(String nameStudentInterview) {
+        this.nameStudentInterview = nameStudentInterview;
+    }
+
+    public void setContentStudentInterview(String contentStudentInterview) {
+        this.contentStudentInterview = contentStudentInterview;
+    }
+
+    public void setMagazine(Magazine magazine) {
+        this.magazine = magazine;
+    }
 }

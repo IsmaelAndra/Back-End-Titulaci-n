@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Careers.AcademicProgram;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface AcademicProgramRepository extends CrudRepository<AcademicProgram, Long>{
-    List<AcademicProgram> findAll();
+public interface AcademicProgramRepository extends JpaRepository<AcademicProgram, Long>{
+    Page<AcademicProgram> findByNameAcademicProgramContaining(String nameAcademicProgram, Pageable pageable);
 }

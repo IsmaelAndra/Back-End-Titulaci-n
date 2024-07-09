@@ -14,12 +14,12 @@ public class CommentBlogService {
         return repository.save(entity);
     }
     
-    public void deleteById( Long id ){
-        repository.deleteById(id);
+    public void deleteById( Long idCommentBlog ){
+        repository.deleteById(idCommentBlog);
     }
     
-    public CommentBlog findById(Long id){
-        return repository.findById(id).orElse(null);
+    public CommentBlog findById(Long idCommentBlog){
+        return repository.findById(idCommentBlog).orElse(null);
     }
     
     public List<CommentBlog> findAll(){

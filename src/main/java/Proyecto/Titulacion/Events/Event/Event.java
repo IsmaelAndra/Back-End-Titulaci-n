@@ -19,24 +19,88 @@ import lombok.Data;
 @Entity
 public class Event {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_event;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idEvent;
     @Column(length = 100)
-    private String title_event;
+    private String titleEvent;
     @Column(length = 500)
-    private String description_event;
+    private String descriptionEvent;
     @Column
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    private LocalDate date_event;
+    private LocalDate dateEvent;
     @Column
     @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    private LocalTime hour_event;
+    private LocalTime hourEvent;
     @Column(length = 100)
-    private String place_event;
+    private String placeEvent;
     @Column(length = 500)
-    private String url_image_event;
+    private String url_imageEvent;
     
     @ManyToOne
-    @JoinColumn(name = "id_user", referencedColumnName="id_user")
+    @JoinColumn(name = "idUser", referencedColumnName="idUser")
     private User user;
+
+    public long getIdEvent() {
+        return idEvent;
+    }
+
+    public String getTitleEvent() {
+        return titleEvent;
+    }
+
+    public String getDescriptionEvent() {
+        return descriptionEvent;
+    }
+
+    public LocalDate getDateEvent() {
+        return dateEvent;
+    }
+
+    public LocalTime getHourEvent() {
+        return hourEvent;
+    }
+
+    public String getPlaceEvent() {
+        return placeEvent;
+    }
+
+    public String getUrl_imageEvent() {
+        return url_imageEvent;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setIdEvent(long idEvent) {
+        this.idEvent = idEvent;
+    }
+
+    public void setTitleEvent(String titleEvent) {
+        this.titleEvent = titleEvent;
+    }
+
+    public void setDescriptionEvent(String descriptionEvent) {
+        this.descriptionEvent = descriptionEvent;
+    }
+
+    public void setDateEvent(LocalDate dateEvent) {
+        this.dateEvent = dateEvent;
+    }
+
+    public void setHourEvent(LocalTime hourEvent) {
+        this.hourEvent = hourEvent;
+    }
+
+    public void setPlaceEvent(String placeEvent) {
+        this.placeEvent = placeEvent;
+    }
+
+    public void setUrl_imageEvent(String url_imageEvent) {
+        this.url_imageEvent = url_imageEvent;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

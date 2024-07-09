@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Field;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,11 +34,11 @@ public class StudentInterviewController {
     @Autowired
     StudentInterviewService service;
 
-    @Operation(summary = "gets an student interview for your id, requires hasAnyRole")
-    @GetMapping("/{id}/")
+    @Operation(summary = "Gets an student interview for your idStudentInterview, requires hasAnyRole")
+    @GetMapping("/{idStudentInterview}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public StudentInterview findById( @PathVariable long id ){
-        return service.findById(id);
+    public StudentInterview findById( @PathVariable long idStudentInterview ){
+        return service.findById(idStudentInterview);
     }
 
     @Operation(summary = "Gets all student interview, requires hasAnyRole")
@@ -54,44 +55,65 @@ public class StudentInterviewController {
         return service.save(entitiy);
     }
     
-    @Operation(summary = "updates an student interview by its id, requires hasAnyRole(ADMIN)")
-    @PutMapping("/{id}/")
+    @Operation(summary = "updates an student interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
+    @PutMapping("/{idStudentInterview}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public StudentInterview update ( @RequestBody StudentInterview entity){
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an studdent interview by its id, requires hasAnyRole(ADMIN)")
-    @DeleteMapping("/{id}/")
+    @Operation(summary = "removes an studdent interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
+    @DeleteMapping("/{idStudentInterview}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long id ){
-        service.deleteById(id);
+    public void deleteById( @PathVariable long idStudentInterview ){
+        service.deleteById(idStudentInterview);
     }
 
-    @Operation(summary = "partial updates an student interview by its id, requires hasAnyRole(ADMIN)")
-    @PatchMapping("/{id}/")
+    @Operation(summary = "partial updates an student interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
+    @PatchMapping("/{idStudentInterview}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public StudentInterview partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
+    public StudentInterview partialUpdate(@PathVariable long idStudentInterview, @RequestBody Map<String, Object> fields){
 
-        StudentInterview entity = findById(id);
+        StudentInterview entity = findById(idStudentInterview);
 
-        // itera sobre los campos que se desean actualizar
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
-            
-            // utiliza reflection para establecer el valor del campo en la entidad
+
             try {
                 Field campoEntidad = StudentInterview.class.getDeclaredField(fieldName);
                 campoEntidad.setAccessible(true);
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                // maneja la excepción si ocurre algún error al acceder al campo
+            } catch (NoSuchFieldException ex) {
+                throw new IllegalArgumentException(
+                        "Campo '" + fieldName + "' no encontrado en la entidad StudentInterview", ex);
+            } catch (IllegalAccessException ex) {
+                throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
         return update(entity);
     }
 
+    @GetMapping("/paginated")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
+    public Page<StudentInterview> findPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idStudentInterview") String sortBy) {
+        return service.findPaginated(page, size, sortBy);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
+    public Page<StudentInterview> findByNameStudentInterview(
+            @RequestParam String nameStudentInterview,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idStudentInterview") String sortBy) {
+        return service.findByNameStudentInterview(nameStudentInterview, page, size, sortBy);
+    }
 }

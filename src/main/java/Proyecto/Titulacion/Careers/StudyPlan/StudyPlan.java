@@ -14,15 +14,48 @@ import lombok.Data;
 @Entity
 public class StudyPlan {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_study_plan;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idStudyPlan;
+
     @Column(length = 100)
-    private String name_study_plan;
+    private String nameStudyPlan;
+
     @Column(length = 200)
-    private String description_study_plan;
+    private String descriptionStudyPlan;
 
     @ManyToOne
-    @JoinColumn(name = "id_academic_program", referencedColumnName="id_academic_program")
+    @JoinColumn(name = "idAcademicProgram", referencedColumnName = "idAcademicProgram")
     private AcademicProgram academicProgram;
-            
+
+    public long getIdStudyPlan() {
+        return idStudyPlan;
+    }
+
+    public String getNameStudyPlan() {
+        return nameStudyPlan;
+    }
+
+    public String getDescriptionStudyPlan() {
+        return descriptionStudyPlan;
+    }
+
+    public AcademicProgram getAcademicProgram() {
+        return academicProgram;
+    }
+
+    public void setIdStudyPlan(long idStudyPlan) {
+        this.idStudyPlan = idStudyPlan;
+    }
+
+    public void setNameStudyPlan(String nameStudyPlan) {
+        this.nameStudyPlan = nameStudyPlan;
+    }
+
+    public void setDescriptionStudyPlan(String descriptionStudyPlan) {
+        this.descriptionStudyPlan = descriptionStudyPlan;
+    }
+
+    public void setAcademicProgram(AcademicProgram academicProgram) {
+        this.academicProgram = academicProgram;
+    }
 }

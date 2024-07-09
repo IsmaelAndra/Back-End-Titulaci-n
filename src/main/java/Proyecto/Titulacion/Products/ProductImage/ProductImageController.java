@@ -25,14 +25,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @RequestMapping("/api/productImage")
 @CrossOrigin({"*"})
 public class ProductImageController {
-
     @Autowired
     ProductImageService service;
 
-    @GetMapping("/{id}/")
+    @GetMapping("/{idProductImage}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public ProductImage findById( @PathVariable long id ){
-        return service.findById(id);
+    public ProductImage findById( @PathVariable long idProductImage ){
+        return service.findById(idProductImage);
     }
 
     @GetMapping("/")
@@ -53,35 +52,36 @@ public class ProductImageController {
         return service.save(entity);
     }
 
-    @DeleteMapping("/{id}/")
+    @DeleteMapping("/{idProductImage}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public void deleteById( @PathVariable long id ){
-        service.deleteById(id);
+    public void deleteById( @PathVariable long idProductImage ){
+        service.deleteById(idProductImage);
     }
 
-    @PatchMapping("/{id}/")
+    @PatchMapping("/{idProductImage}/")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
-    public ProductImage partialUpdate(@PathVariable long id, @RequestBody Map<String, Object> fields){
+    public ProductImage partialUpdate(@PathVariable long idProductImage, @RequestBody Map<String, Object> fields){
 
-        ProductImage entity = findById(id);
+        ProductImage entity = findById(idProductImage);
 
-        // itera sobre los campos que se desean actualizar
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
             
-            // utiliza reflection para establecer el valor del campo en la entidad
             try {
                 Field campoEntidad = ProductImage.class.getDeclaredField(fieldName);
                 campoEntidad.setAccessible(true);
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                // maneja la excepción si ocurre algún error al acceder al campo
+            } catch (NoSuchFieldException ex) {
+                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad ProductImage", ex);
+            } catch (IllegalAccessException ex) {
+                throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
         return update(entity);
     }
-
 }

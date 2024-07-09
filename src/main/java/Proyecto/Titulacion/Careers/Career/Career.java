@@ -11,11 +11,36 @@ import lombok.Data;
 @Entity
 public class Career {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_career;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idCareer;
+
     @Column(length = 100)
-    private String name_career;
+    private String nameCareer;
+
     @Column(length = 200)
-    private String description_career;
-            
+    private String descriptionCareer;
+
+    public long getIdCareer() {
+        return idCareer;
+    }
+
+    public String getNameCareer() {
+        return nameCareer;
+    }
+
+    public String getDescriptionCareer() {
+        return descriptionCareer;
+    }
+
+    public void setIdCareer(long idCareer) {
+        this.idCareer = idCareer;
+    }
+
+    public void setNameCareer(String nameCareer) {
+        this.nameCareer = nameCareer;
+    }
+
+    public void setDescriptionCareer(String descriptionCareer) {
+        this.descriptionCareer = descriptionCareer;
+    }
 }

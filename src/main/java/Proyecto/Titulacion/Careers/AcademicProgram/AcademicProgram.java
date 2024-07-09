@@ -9,20 +9,53 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
-        
+
 @Data
 @Entity
 public class AcademicProgram {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_academic_program;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idAcademicProgram;
+
     @Column(length = 100)
-    private String name_academic_program;
+    private String nameAcademicProgram;
+
     @Column(length = 300)
-    private String description_academic_program;
+    private String descriptionAcademicProgram;
 
     @ManyToOne
-    @JoinColumn(name = "id_career", referencedColumnName="id_career")
+    @JoinColumn(name = "idCareer", referencedColumnName="idCareer")
     private Career career;
-            
+
+    public long getIdAcademicProgram() {
+        return idAcademicProgram;
+    }
+
+    public String getNameAcademicProgram() {
+        return nameAcademicProgram;
+    }
+
+    public String getDescriptionAcademicProgram() {
+        return descriptionAcademicProgram;
+    }
+
+    public Career getCareer() {
+        return career;
+    }
+
+    public void setIdAcademicProgram(long idAcademicProgram) {
+        this.idAcademicProgram = idAcademicProgram;
+    }
+
+    public void setNameAcademicProgram(String nameAcademicProgram) {
+        this.nameAcademicProgram = nameAcademicProgram;
+    }
+
+    public void setDescriptionAcademicProgram(String descriptionAcademicProgram) {
+        this.descriptionAcademicProgram = descriptionAcademicProgram;
+    }
+
+    public void setCareer(Career career) {
+        this.career = career;
+    }    
 }

@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Magazines.Trend;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface TrendRepository extends CrudRepository<Trend, Long>{
-    List<Trend> findAll();
+public interface TrendRepository extends JpaRepository<Trend, Long>{
+    Page<Trend> findByTitleTrendContaining(String titleTrend, Pageable pageable);
 }

@@ -14,19 +14,70 @@ import lombok.Data;
 @Entity
 public class Blog {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_blog;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idBlog;
+
     @Column(length = 100)
-    private String title_blog;
+    private String titleBlog;
+
     @Column(length = 100)
-    private String subtitle_blog;
+    private String subtitleBlog;
+
     @Column(length = 500)
-    private String content_blog;
+    private String contentBlog;
+
     @Column(length = 500)
-    private String url_content_blog;
+    private String url_contentBlog;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", referencedColumnName="id_user")
+    @JoinColumn(name = "idUser", referencedColumnName = "idUser")
     private User user;
-            
+
+    public long getIdBlog() {
+        return idBlog;
+    }
+
+    public String getTitleBlog() {
+        return titleBlog;
+    }
+
+    public String getSubtitleBlog() {
+        return subtitleBlog;
+    }
+
+    public String getContentBlog() {
+        return contentBlog;
+    }
+
+    public String getUrl_contentBlog() {
+        return url_contentBlog;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setIdBlog(long idBlog) {
+        this.idBlog = idBlog;
+    }
+
+    public void setTitleBlog(String titleBlog) {
+        this.titleBlog = titleBlog;
+    }
+
+    public void setSubtitleBlog(String subtitleBlog) {
+        this.subtitleBlog = subtitleBlog;
+    }
+
+    public void setContentBlog(String contentBlog) {
+        this.contentBlog = contentBlog;
+    }
+
+    public void setUrl_contentBlog(String url_contentBlog) {
+        this.url_contentBlog = url_contentBlog;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

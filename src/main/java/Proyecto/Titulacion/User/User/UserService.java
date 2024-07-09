@@ -3,6 +3,10 @@ package Proyecto.Titulacion.User.User;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,27 +14,29 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    //Crear
-    public User save(User entity)
-    {
+    public User save(User entity) {
         return userRepository.save(entity);
     }
 
-    //Leer
-    public User findById(long id_user)
-    {
-        return userRepository.findById(id_user).orElse(null);
+    public User findById(long idUser) {
+        return userRepository.findById(idUser).orElse(null);
     }
 
-    //Eliminar
-    public void deleteByID(long id_user)
-    {
-        userRepository.deleteById(id_user);
+    public void deleteByID(long idUser) {
+        userRepository.deleteById(idUser);
     }
-    
-    //Seleccionar Todo
-    public List <User> findAll()
-    {
+
+    public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    public Page<User> findPaginated(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        return userRepository.findAll(pageable);
+    }
+
+    public Page<User> findByNameUser(String nameUser, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        return userRepository.findByNameUserContaining(nameUser, pageable);
     }
 }

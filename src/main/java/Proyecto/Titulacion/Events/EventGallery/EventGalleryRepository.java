@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Events.EventGallery;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface EventGalleryRepository extends CrudRepository<EventGallery, Long>{
-    List<EventGallery> findAll();
+public interface EventGalleryRepository extends JpaRepository<EventGallery, Long>{
+    Page<EventGallery> findByTitleEventGalleryContaining(String titleEventGallery, Pageable pageable);
 }

@@ -14,15 +14,46 @@ import lombok.Data;
 @Entity
 public class Trend {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_trend;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idTrend;
     @Column(length = 100)
-    private String title_trend;
+    private String titleTrend;
     @Column(length = 100)
-    private String description_trend;
+    private String descriptionTrend;
 
     @ManyToOne
-    @JoinColumn(name = "id_magazine", referencedColumnName="id_magazine")
+    @JoinColumn(name = "idMagazine", referencedColumnName="idMagazine")
     private Magazine magazine;
-            
+    
+    public long getIdTrend() {
+        return idTrend;
+    }
+
+    public String getTitleTrend() {
+        return titleTrend;
+    }
+
+    public String getDescriptionTrend() {
+        return descriptionTrend;
+    }
+
+    public Magazine getMagazine() {
+        return magazine;
+    }
+
+    public void setIdTrend(long idTrend) {
+        this.idTrend = idTrend;
+    }
+
+    public void setTitleTrend(String titleTrend) {
+        this.titleTrend = titleTrend;
+    }
+
+    public void setDescriptionTrend(String descriptionTrend) {
+        this.descriptionTrend = descriptionTrend;
+    }
+
+    public void setMagazine(Magazine magazine) {
+        this.magazine = magazine;
+    }
 }

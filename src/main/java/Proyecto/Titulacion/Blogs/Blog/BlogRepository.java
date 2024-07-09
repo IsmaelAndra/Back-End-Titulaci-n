@@ -1,9 +1,9 @@
 package Proyecto.Titulacion.Blogs.Blog;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
     
-public interface BlogRepository extends CrudRepository<Blog, Long>{
-    List<Blog> findAll();
+public interface BlogRepository extends JpaRepository<Blog, Long>{
+    Page<Blog> findByTitleBlogContaining(String titleBlog, Pageable pageable);
 }

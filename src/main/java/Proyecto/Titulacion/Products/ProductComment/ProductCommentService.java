@@ -9,21 +9,20 @@ import org.springframework.stereotype.Service;
 public class ProductCommentService {
     @Autowired
     ProductCommentRepository repository;
-    
-    public ProductComment save( ProductComment entity ){
+
+    public ProductComment save(ProductComment entity) {
         return repository.save(entity);
     }
-    
-    public void deleteById( Long id ){
-        repository.deleteById(id);
+
+    public void deleteById(Long idProductComment) {
+        repository.deleteById(idProductComment);
     }
-    
-    public ProductComment findById(Long id){
-        return repository.findById(id).orElse(null);
+
+    public ProductComment findById(Long idProductComment) {
+        return repository.findById(idProductComment).orElse(null);
     }
-    
-    public List<ProductComment> findAll(){
+
+    public List<ProductComment> findAll() {
         return repository.findAll();
     }
-    
 }

@@ -25,9 +25,35 @@ public class Rol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private long id_rol;
+    private long idRol;
+    
     @Column(length = 30)
-    private String namerol;
+    private String nameRol;
+    
     @Column(length = 100)
-    private String description_rol;
+    private String descriptionRol;
+
+    public long getIdRol() {
+        return idRol;
+    }
+
+    public String getNameRol() {
+        return nameRol;
+    }
+
+    public String getDescriptionRol() {
+        return descriptionRol;
+    }
+
+    public void setIdRol(long idRol) {
+        this.idRol = idRol;
+    }
+
+    public void setNameRol(String nameRol) {
+        this.nameRol = nameRol;
+    }
+
+    public void setDescriptionRol(String descriptionRol) {
+        this.descriptionRol = descriptionRol;
+    }
 }

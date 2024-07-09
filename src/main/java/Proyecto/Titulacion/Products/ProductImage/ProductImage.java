@@ -14,13 +14,36 @@ import lombok.Data;
 @Entity
 public class ProductImage {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_product_image;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idProductImage;
     @Column(length = 255)
-    private String url_product_image;
+    private String urlProductImage;
 
     @ManyToOne
-    @JoinColumn(name = "id_product", referencedColumnName="id_product")
+    @JoinColumn(name = "idProduct", referencedColumnName="idProduct")
     private Product product;
-            
+
+    public long getIdProductImage() {
+        return idProductImage;
+    }
+
+    public String getUrlProductImage() {
+        return urlProductImage;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setIdProductImage(long idProductImage) {
+        this.idProductImage = idProductImage;
+    }
+
+    public void setUrlProductImage(String urlProductImage) {
+        this.urlProductImage = urlProductImage;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 }

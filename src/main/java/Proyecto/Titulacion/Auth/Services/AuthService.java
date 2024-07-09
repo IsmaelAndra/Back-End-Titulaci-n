@@ -52,21 +52,21 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request, HttpServletResponse response) {
         String roleName = request.getRole();
-        Rol userRole = rolRepository.findByNamerol(roleName)
+        Rol userRole = rolRepository.findByNameRol(roleName)
                 .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        String encodedPassword_Veri = passwordEncoder.encode(request.getPass_verification_user());
+        String encodedPassword_Veri = passwordEncoder.encode(request.getPassVerificationUser());
 
         User user = User.builder()
-                .photo_user(request.getPhoto_user())
-                .name_user(request.getName_user())
+                .photoUser(request.getPhotoUser())
+                .nameUser(request.getNameUser())
                 .username(request.getUsername())
-                .lastname_user(request.getLastname_user())
-                .phone_user(request.getPhone_user())
-                .email_user(request.getEmail_user())
+                .lastnameUser(request.getLastnameUser())
+                .phoneUser(request.getPhoneUser())
+                .emailUser(request.getEmailUser())
                 .password(encodedPassword)
-                .pass_verification_user(encodedPassword_Veri)
+                .passVerificationUser(encodedPassword_Veri)
                 .rol(userRole)
                 .build();
 

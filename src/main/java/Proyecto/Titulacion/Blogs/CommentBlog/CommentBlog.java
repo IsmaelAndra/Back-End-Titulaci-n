@@ -14,13 +14,37 @@ import lombok.Data;
 @Entity
 public class CommentBlog {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id_comment_blog;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idCommentBlog;
+
     @Column(length = 100)
-    private String content_comment_blog;
+    private String contentCommentBlog;
 
     @ManyToOne
-    @JoinColumn(name = "id_blog", referencedColumnName="id_blog")
+    @JoinColumn(name = "idBlog", referencedColumnName = "idBlog")
     private Blog blog;
-            
+
+    public long getIdCommentBlog() {
+        return idCommentBlog;
+    }
+
+    public String getContentCommentBlog() {
+        return contentCommentBlog;
+    }
+
+    public Blog getBlog() {
+        return blog;
+    }
+
+    public void setIdCommentBlog(long idCommentBlog) {
+        this.idCommentBlog = idCommentBlog;
+    }
+
+    public void setContentCommentBlog(String contentCommentBlog) {
+        this.contentCommentBlog = contentCommentBlog;
+    }
+
+    public void setBlog(Blog blog) {
+        this.blog = blog;
+    }
 }

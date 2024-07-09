@@ -14,16 +14,15 @@ public class ProductImageService {
         return repository.save(entity);
     }
     
-    public void deleteById( Long id ){
-        repository.deleteById(id);
+    public void deleteById( Long idProductImage ){
+        repository.deleteById(idProductImage);
     }
     
-    public ProductImage findById(Long id){
-        return repository.findById(id).orElse(null);
+    public ProductImage findById(Long idProductImage){
+        return repository.findById(idProductImage).orElse(null);
     }
     
     public List<ProductImage> findAll(){
         return repository.findAll();
     }
-    
 }

@@ -10,20 +10,19 @@ public class ProjectImageService {
     @Autowired
     ProjectImageRepository repository;
     
-    public ProjectImage save( ProjectImage entity ){
+    public ProjectImage save(ProjectImage entity) {
         return repository.save(entity);
     }
     
-    public void deleteById( Long id ){
-        repository.deleteById(id);
+    public void deleteById(Long idProjectImage) {
+        repository.deleteById(idProjectImage);
     }
     
-    public ProjectImage findById(Long id){
-        return repository.findById(id).orElse(null);
+    public ProjectImage findById(Long idProjectImage) {
+        return repository.findById(idProjectImage).orElse(null);
     }
     
-    public List<ProjectImage> findAll(){
+    public List<ProjectImage> findAll() {
         return repository.findAll();
     }
-    
 }
