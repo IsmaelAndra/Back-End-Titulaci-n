@@ -21,4 +21,5 @@ public class RegisterRequest {
     private boolean verified;
     private String verificationCode;
     private String role;
+    private String career;
 }

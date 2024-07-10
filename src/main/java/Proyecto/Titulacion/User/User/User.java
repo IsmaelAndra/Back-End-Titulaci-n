@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import Proyecto.Titulacion.Careers.Career.Career;
 import Proyecto.Titulacion.User.Rol.Rol;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,6 +68,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "idRol", referencedColumnName = "idRol")
     private Rol rol;
 
+    @ManyToOne
+    @JoinColumn(name = "idCareer", referencedColumnName = "idCareer")
+    private Career career;
+
     public long getIdUser() {
         return idUser;
     }
@@ -115,6 +120,10 @@ public class User implements UserDetails {
         return rol;
     }
 
+    public Career getCareer() {
+        return career;
+    }
+
     public void setIdUser(long idUser) {
         this.idUser = idUser;
     }
@@ -161,6 +170,10 @@ public class User implements UserDetails {
 
     public void setRol(Rol rol) {
         this.rol = rol;
+    }
+
+    public void setCareer(Career career) {
+        this.career = career;
     }
 
     @Override
