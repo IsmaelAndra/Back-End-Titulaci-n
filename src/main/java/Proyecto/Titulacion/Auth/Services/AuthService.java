@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import Proyecto.Titulacion.Auth.Request.LoginRequest;
 import Proyecto.Titulacion.Auth.Request.RegisterRequest;
 import Proyecto.Titulacion.Auth.Response.AuthResponse;
+import Proyecto.Titulacion.Careers.Career.Career;
+import Proyecto.Titulacion.Careers.Career.CareerRepository;
 import Proyecto.Titulacion.User.Rol.Rol;
 import Proyecto.Titulacion.User.Rol.RolRepository;
 import Proyecto.Titulacion.User.User.User;
@@ -30,6 +32,7 @@ public class AuthService {
     private final RolRepository rolRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final CareerRepository careerRepository;
 
     public AuthResponse login(LoginRequest request, HttpServletResponse response) {
         try {
@@ -58,6 +61,10 @@ public class AuthService {
         Rol userRole = rolRepository.findByNameRol(roleName)
                 .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
 
+        String careereName = request.getCareere();
+        Career userCareere = careerRepository.findByNameCareer(careereName)
+                .orElseThrow(() -> new RuntimeException("Career not found: " + careereName));
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         String encodedPassword_Veri = passwordEncoder.encode(request.getPassVerificationUser());
         String verificationCode = generateVerificationCode();
@@ -74,6 +81,7 @@ public class AuthService {
                 .verified(false)
                 .verificationCode(verificationCode)
                 .rol(userRole)
+                .career(userCareere)
                 .build();
 
         userRepository.save(user);

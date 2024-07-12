@@ -58,9 +58,8 @@ public class SecurityConfig {
 
         @Bean
         protected CorsConfigurationSource corsConfigurationSource() {
-                final CorsConfiguration configuration = new CorsConfiguration();
-
-                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
                 configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Arrays.asList(
@@ -72,7 +71,7 @@ public class SecurityConfig {
                                 "x-csrf-token",
                                 "x-requested-with"));
 
-                final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
                 return source;
         }
