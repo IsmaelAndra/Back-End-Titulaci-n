@@ -7,6 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TitulacionApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TitulacionApplication.class, args);
+			SpringApplication.run(TitulacionApplication.class, args);
 	}
 }

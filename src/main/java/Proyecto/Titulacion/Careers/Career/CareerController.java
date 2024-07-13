@@ -41,9 +41,8 @@ public class CareerController {
         return service.findById(idCareer);
     }
 
-    @Operation(summary = "Gets all careers, requires hasAnyRole")
+    @Operation(summary = "Gets all careers")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Career> findAll() {
         return service.findAll();
     }

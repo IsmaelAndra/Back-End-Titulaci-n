@@ -1,5 +1,6 @@
 package Proyecto.Titulacion.Auth.Controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,37 +21,39 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequiredArgsConstructor
 public class AuthController {
     @Autowired
     private final AuthService authService;
 
-    @PostMapping(value="login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request, HttpServletResponse response)
-    {
+    @PostMapping(value = "login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         return ResponseEntity.ok(authService.login(request, response));
     }
 
-    @PostMapping(value="register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request, HttpServletResponse response)
-    {
+    @PostMapping(value = "register")
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request, HttpServletResponse response) {
         return ResponseEntity.ok(authService.register(request, response));
     }
 
-    @PostMapping(value="verify")
-    public ResponseEntity<String> verify(@RequestBody Map<String, String> request) {
+    @PostMapping(value = "verify")
+    public ResponseEntity<Map<String, String>> verify(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         String verificationCode = request.get("codigoVerificacion");
+        Map<String, String> response = new HashMap<>();
         try {
             boolean verified = authService.verifyCode(username, verificationCode);
             if (verified) {
-                return ResponseEntity.ok("Verificación exitosa");
+                response.put("message", "Verificación exitosa");
+                return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de verificación invalido");
+                response.put("message", "Código de verificación inválido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 }
