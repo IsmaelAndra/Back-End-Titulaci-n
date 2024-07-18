@@ -50,14 +50,14 @@ public class BlogController {
 
     @Operation(summary = "save a blog, Requiere hasAnyRole")
     @PostMapping("/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Blog save( @RequestBody Blog entitiy ){
         return service.save(entitiy);
     }
     
     @Operation(summary = "updates an blog by its idBlog, Requiere hasAnyRole")
     @PutMapping("/{idBlog}/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Blog update ( @RequestBody Blog entity){
         return service.save(entity);
     }
@@ -71,7 +71,7 @@ public class BlogController {
 
     @Operation(summary = "partial update an blog by its idBlog, Requiere hasAnyRole")
     @PatchMapping("/{idBlog}/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Blog partialUpdate(@PathVariable long idBlog, @RequestBody Map<String, Object> fields){
 
         Blog entity = findById(idBlog);

@@ -29,7 +29,7 @@ public class Event {
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate dateEvent;
     @Column
-    @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
     private LocalTime hourEvent;
     @Column(length = 100)
     private String placeEvent;

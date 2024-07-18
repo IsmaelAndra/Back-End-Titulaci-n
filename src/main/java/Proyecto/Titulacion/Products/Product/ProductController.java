@@ -50,15 +50,15 @@ public class ProductController {
 
     @Operation(summary = "Save an product, requires hasAnyRole(EMPRENDEDOR)")
     @PostMapping("/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Product save( @RequestBody Product entitiy ){
         return service.save(entitiy);
     }
     
 
     @Operation(summary = "Updates an product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
-    @PutMapping("/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PutMapping("/{idProduct}/")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Product update ( @RequestBody Product entity){
         return service.save(entity);
     }

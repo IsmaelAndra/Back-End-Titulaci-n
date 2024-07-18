@@ -20,6 +20,9 @@ public class Career {
     @Column(length = 200)
     private String descriptionCareer;
 
+    public Career() {
+    }
+
     public long getIdCareer() {
         return idCareer;
     }
