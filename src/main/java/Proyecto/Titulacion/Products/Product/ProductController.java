@@ -1,29 +1,36 @@
 package Proyecto.Titulacion.Products.Product;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import Proyecto.Titulacion.Products.ProductImage.ProductImage;
+import Proyecto.Titulacion.Products.ProductImage.ProductImageService;
+import Proyecto.Titulacion.User.User.User;
+import Proyecto.Titulacion.User.User.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.io.IOException;
+import java.io.File;
 
 @RestController
 @RequestMapping("/api/product")
@@ -34,53 +41,175 @@ public class ProductController {
     @Autowired
     ProductService service;
 
-    @Operation(summary = "Gets an product for your idProduct, requires hasAnyRole")
-    @GetMapping("/{idProduct}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public Product findById( @PathVariable long idProduct ){
-        return service.findById(idProduct);
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ProductImageService productImageService; // Asegúrate de tener este servicio para ProductImage
+
+    private final String UPLOAD_DIR = "uploads/";
+
+    // @Operation(summary = "Gets a product for your idProduct, requires hasAnyRole")
+    // @GetMapping("/{idProduct}/")
+    // @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
+    // public Product findById(@PathVariable long idProduct) {
+    //     return service.findById(idProduct);
+    // }
+
+    @Operation(summary = "Gets a product for your idProduct, requires hasAnyRole")
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long idProduct){
+        Optional<Product> product = service.findById(idProduct);
+        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Gets all product, requires hasAnyRole")
+    @Operation(summary = "Gets all products, requires hasAnyRole")
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Product> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "Save an product, requires hasAnyRole(EMPRENDEDOR)")
-    @PostMapping("/")
+    @Operation(summary = "Save a product with images, requires hasAnyRole(EMPRENDEDOR)")
+    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public Product save( @RequestBody Product entitiy ){
-        return service.save(entitiy);
-    }
-    
+    public ResponseEntity<Product> saveProduct(
+        @RequestParam("nameProduct") String nameProduct,
+        @RequestParam("descriptionProduct") String descriptionProduct,
+        @RequestParam("priceProduct") Double priceProduct,
+        @RequestParam("images") List<MultipartFile> images,
+        @AuthenticationPrincipal UserDetails userDetails) {
 
-    @Operation(summary = "Updates an product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
-    @PutMapping("/{idProduct}/")
+        String username = userDetails.getUsername();
+        User user = userService.findByUsername(username);
+
+        Product product = new Product();
+        product.setNameProduct(nameProduct);
+        product.setDescriptionProduct(descriptionProduct);
+        product.setPriceProduct(priceProduct);
+        product.setUser(user);
+
+        Product savedProduct = service.save(product);
+
+        if (!images.isEmpty()) {
+            for (MultipartFile image : images) {
+                if (!image.isEmpty()) {
+                    String imageUrl = saveImage(image);
+                    ProductImage productImage = new ProductImage();
+                    productImage.setUrlProductImage(imageUrl);
+                    productImage.setProduct(savedProduct);
+                    productImageService.save(productImage);
+                }
+            }
+        }
+
+        return ResponseEntity.ok(savedProduct);
+    }
+
+    @Operation(summary = "Updates a product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
+    @PutMapping("/{idProduct}")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public Product update ( @RequestBody Product entity){
-        return service.save(entity);
+    public ResponseEntity<Product> updateProduct(@PathVariable long idProduct, @RequestBody Product product) {
+        Optional<Product> optionalProduct = service.findById(idProduct);
+        if (optionalProduct.isPresent()) {
+            Product existingProduct = optionalProduct.get();
+            existingProduct.setNameProduct(product.getNameProduct());
+            existingProduct.setDescriptionProduct(product.getDescriptionProduct());
+            existingProduct.setPriceProduct(product.getPriceProduct());
+            existingProduct.setUser(product.getUser());
+            service.save(existingProduct);
+            return ResponseEntity.ok(existingProduct);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    // @PutMapping(value = "/{idProduct}/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
+    // public ResponseEntity<Product> updateProduct(
+    //         @PathVariable Long idProduct,
+    //         @RequestParam("nameProduct") String nameProduct,
+    //         @RequestParam("descriptionProduct") String descriptionProduct,
+    //         @RequestParam("priceProduct") Double priceProduct,
+    //         @RequestParam(value = "images", required = false) List<MultipartFile> images,
+    //         @AuthenticationPrincipal UserDetails userDetails) {
+
+    //     Optional<Product> optionalProduct = service.findById(idProduct);
+    //     if (!optionalProduct.isPresent()) {
+    //         return ResponseEntity.notFound().build();
+    //     }
+
+    //     Product product = optionalProduct.get();
+    //     product.setNameProduct(nameProduct);
+    //     product.setDescriptionProduct(descriptionProduct);
+    //     product.setPriceProduct(priceProduct);
+
+    //     // Actualizar imágenes si se proporcionan
+    //     if (images != null && !images.isEmpty()) {
+    //         productImageService.deleteByProduct(product);
+    //         for (MultipartFile image : images) {
+    //             if (!image.isEmpty()) {
+    //                 String imageUrl = saveImage(image);
+    //                 ProductImage productImage = new ProductImage();
+    //                 productImage.setUrlProductImage(imageUrl);
+    //                 productImage.setProduct(product);
+    //                 productImageService.save(productImage);
+    //             }
+    //         }
+    //     }
+
+    //     Product updatedProduct = service.save(product);
+    //     return ResponseEntity.ok(updatedProduct);
+    // }
+
+    private String saveImage(MultipartFile image) {
+        try {
+            // Crear el directorio si no existe
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Guardar el archivo
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+            Path copyLocation = Paths.get(uploadPath + File.separator + fileName);
+            Files.copy(image.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            return copyLocation.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al guardar el archivo de imagen");
+        }
     }
 
-    @Operation(summary = "Removes an product by its idProduct, requires hasAnyRole(ADMIN, EMPRENDEDOR)")
+    // @Operation(summary = "Updates a product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
+    // @PutMapping("/{idProduct}/")
+    // @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
+    // public Product update(@RequestBody Product entity) {
+    //     return service.save(entity);
+    // }
+
+    @Operation(summary = "Removes a product by its idProduct, requires hasAnyRole(ADMIN, EMPRENDEDOR)")
     @DeleteMapping("/{idProduct}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public void deleteById( @PathVariable long idProduct ){
+    public void deleteById(@PathVariable long idProduct) {
         service.deleteById(idProduct);
     }
 
-    @Operation(summary = "Partial updates an product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
+    @Operation(summary = "Partial updates a product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
     @PatchMapping("/{idProduct}/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
-    public Product partialUpdate(@PathVariable long idProduct, @RequestBody Map<String, Object> fields){
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
+    public ResponseEntity<Product> partialUpdate(@PathVariable long idProduct, @RequestBody Map<String, Object> fields) {
+        Optional<Product> optionalProduct = service.findById(idProduct);
+        
+        if (!optionalProduct.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        Product entity = findById(idProduct);
+        Product entity = optionalProduct.get();
 
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
             Object fieldValue = field.getValue();
-            
+
             try {
                 Field campoEntidad = Product.class.getDeclaredField(fieldName);
                 campoEntidad.setAccessible(true);
@@ -95,7 +224,9 @@ public class ProductController {
                 throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
-        return update(entity);
+
+        Product updatedProduct = service.save(entity);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     @GetMapping("/paginated")
@@ -115,5 +246,10 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "idProduct") String sortBy) {
         return service.findByNameProduct(nameProduct, page, size, sortBy);
+    }
+
+    @GetMapping("/stats")
+    public Map<String, Long> getProductStats(@RequestParam String period) {
+        return service.getProductStats(period);
     }
 }

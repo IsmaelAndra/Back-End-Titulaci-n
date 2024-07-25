@@ -1,5 +1,6 @@
 package Proyecto.Titulacion.Magazines.StudentInterview;
 
+import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.Magazines.Magazine.Magazine;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-public class StudentInterview {
+@EqualsAndHashCode(callSuper = true)
+public class StudentInterview extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idStudentInterview;

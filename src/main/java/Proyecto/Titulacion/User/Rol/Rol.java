@@ -1,5 +1,6 @@
 package Proyecto.Titulacion.User.Rol;
 
+import Proyecto.Titulacion.Audit.Audit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -16,8 +18,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name="rol")
-public class Rol {
+public class Rol extends Audit {
     public static final String USER = "USER";
     public static final String ADMIN = "ADMIN";
     public static final String EMPRENDEDOR = "EMPRENDEDOR";

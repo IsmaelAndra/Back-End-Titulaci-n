@@ -1,5 +1,6 @@
 package Proyecto.Titulacion.Products.Product;
 
+import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.User.User.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-public class Product {
+@EqualsAndHashCode(callSuper = true)
+public class Product extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idProduct;

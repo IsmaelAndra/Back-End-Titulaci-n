@@ -5,6 +5,7 @@ import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.User.User.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,10 +15,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
-        
+import lombok.EqualsAndHashCode;
+
 @Data
 @Entity
-public class Event {
+@EqualsAndHashCode(callSuper = true)
+public class Event extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idEvent;

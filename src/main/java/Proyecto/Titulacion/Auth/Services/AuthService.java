@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +37,9 @@ public class AuthService {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-            UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-            String token = jwtService.getToken(user);
+            User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+            
+            String token = jwtService.getToken(user, user.getNameUser(), user.getLastnameUser(), user.getEmailUser(), user.getPhotoUser());
 
             Cookie jwtCookie = new Cookie("jwt_token", token);
             jwtCookie.setHttpOnly(true);
@@ -86,8 +86,10 @@ public class AuthService {
 
         userRepository.save(user);
 
+        String token = jwtService.getToken(user, user.getNameUser(), user.getLastnameUser(), user.getEmailUser(), user.getPhotoUser());
+
         return AuthResponse.builder()
-                .token(jwtService.getToken(user))
+                .token(token)
                 .build();
     }
     

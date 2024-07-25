@@ -9,6 +9,7 @@ import java.util.function.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import Proyecto.Titulacion.User.User.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,8 +20,15 @@ import io.jsonwebtoken.security.Keys;
 public class JWTService {
     private static final String SECRET_KEY ="9a4f2c8d3b7a1e6f45c8a0b3f267d8b1d4e6f3c8a9d2b5f8e3a9c8b5f6v8a3d9";
 
-    public String getToken(UserDetails user){
-        return getToken(new HashMap<>(), user);
+    public String getToken(UserDetails user, String name, String lastName, String mail, String photo) {
+        User userEntity = (User) user;
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("name", name);
+        extraClaims.put("lastName", lastName);
+        extraClaims.put("mail", mail);
+        extraClaims.put("photo", photo);
+        extraClaims.put("role", userEntity.getRol().getNameRol());
+        return getToken(extraClaims, user);
     }
 
     private String getToken(Map<String, Object> extraClaims, UserDetails user) {
@@ -41,6 +49,10 @@ public class JWTService {
 
     public String getUsernameFromToken(String token) {
         return getClaim(token, Claims::getSubject);
+    }
+
+    public String getRoleFromToken(String token) {
+        return getClaim(token, claims -> claims.get("role", String.class));
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

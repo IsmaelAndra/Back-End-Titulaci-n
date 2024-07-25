@@ -41,13 +41,13 @@ public class ProductImageController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ProductImage save( @RequestBody ProductImage entitiy ){
         return service.save(entitiy);
     }
     
     @PutMapping("/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ProductImage update ( @RequestBody ProductImage entity){
         return service.save(entity);
     }
@@ -59,7 +59,7 @@ public class ProductImageController {
     }
 
     @PatchMapping("/{idProductImage}/")
-    @PreAuthorize("hasAnyRole('EMPRENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ProductImage partialUpdate(@PathVariable long idProductImage, @RequestBody Map<String, Object> fields){
 
         ProductImage entity = findById(idProductImage);

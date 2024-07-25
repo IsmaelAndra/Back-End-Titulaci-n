@@ -1,15 +1,18 @@
 package Proyecto.Titulacion.Projects.StudentProject;
 
+import Proyecto.Titulacion.Audit.Audit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
-        
+import lombok.EqualsAndHashCode;
+
 @Data
 @Entity
-public class StudentProject {
+@EqualsAndHashCode(callSuper = true)
+public class StudentProject extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idStudentProject;

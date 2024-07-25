@@ -1,5 +1,6 @@
 package Proyecto.Titulacion.Events.EventGallery;
 
+import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.Events.Event.Event;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
-        
+import lombok.EqualsAndHashCode;
+
 @Data
 @Entity
-public class EventGallery {
+@EqualsAndHashCode(callSuper = true)
+public class EventGallery extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idEventGallery;
