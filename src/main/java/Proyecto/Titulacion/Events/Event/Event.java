@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.User.User.User;
@@ -19,6 +20,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @EqualsAndHashCode(callSuper = true)
 public class Event extends Audit {
     @Id

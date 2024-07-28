@@ -7,6 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.Careers.Career.Career;
 import Proyecto.Titulacion.User.Rol.Rol;
@@ -179,6 +181,7 @@ public class User extends Audit implements UserDetails {
         this.career = career;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (rol != null) {

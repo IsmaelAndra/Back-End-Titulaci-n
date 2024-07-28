@@ -117,7 +117,6 @@ public class ProductController {
             existingProduct.setDescriptionProduct(product.getDescriptionProduct());
             existingProduct.setPriceProduct(product.getPriceProduct());
             existingProduct.setUser(product.getUser());
-            service.save(existingProduct);
             return ResponseEntity.ok(existingProduct);
         } else {
             return ResponseEntity.notFound().build();

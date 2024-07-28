@@ -20,17 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import Proyecto.Titulacion.Blogs.Blog.Blog;
+import Proyecto.Titulacion.Blogs.Blog.BlogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/entidad")
+@RequestMapping("/api/comments")
 @CrossOrigin({"*"})
 @Tag(name = "Controlador Authority (Permisos)", description = "Tabla authorities")
 public class CommentBlogController {
 
     @Autowired
     CommentBlogService service;
+
+    @Autowired
+    private BlogService blogService;
 
     @Operation(summary = "gets an comment of blog for your idCommentBlog, Requiere hasAnyRole")
     @GetMapping("/{idCommentBlog}/")
@@ -49,15 +54,20 @@ public class CommentBlogController {
     @Operation(summary = "save an comment blog, Requiere hasAnyRole")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
-    public CommentBlog save( @RequestBody CommentBlog entitiy ){
-        return service.save(entitiy);
+    public CommentBlog save(@RequestBody CommentBlog entity) {
+        Blog blog = blogService.findById(entity.getBlog().getIdBlog())
+                               .orElseThrow(() -> new RuntimeException("Blog not found"));
+        entity.setBlog(blog);
+        return service.save(entity);
     }
     
     @Operation(summary = "updates an achievement by its idCommentBlog, requires hasAnyRole")
-    @PutMapping("/")
+    @PutMapping("/{idCommentBlog}")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
-    public CommentBlog update ( @RequestBody CommentBlog entity){
-        return service.save(entity);
+    public CommentBlog update(@PathVariable long idCommentBlog, @RequestBody CommentBlog entity) {
+        CommentBlog existingComment = service.findById(idCommentBlog);
+        existingComment.setContentCommentBlog(entity.getContentCommentBlog());
+        return service.save(existingComment);
     }
 
     @Operation(summary = "removes an comment blog by its idCommentBlog, requires hasAnyRole")
@@ -67,11 +77,10 @@ public class CommentBlogController {
         service.deleteById(idCommentBlog);
     }
 
-    @Operation(summary = "partial updates an cooment blog by its idCommentBlog, requires hasAnyRole")
+    @Operation(summary = "Actualiza parcialmente un comentario por su id, Requiere hasAnyRole")
     @PatchMapping("/{idCommentBlog}/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
-    public CommentBlog partialUpdate(@PathVariable long idCommentBlog, @RequestBody Map<String, Object> fields){
-
+    public CommentBlog partialUpdate(@PathVariable long idCommentBlog, @RequestBody Map<String, Object> fields) {
         CommentBlog entity = findById(idCommentBlog);
 
         for (Map.Entry<String, Object> field : fields.entrySet()) {
@@ -85,15 +94,14 @@ public class CommentBlogController {
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
             } catch (NoSuchFieldException ex) {
-                throw new IllegalArgumentException(
-                        "Campo '" + fieldName + "' no encontrado en la entidad CommentBlog", ex);
+                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad CommentBlog", ex);
             } catch (IllegalAccessException ex) {
                 throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
             } catch (Exception ex) {
                 throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
-        return update(entity);
+        return update(idCommentBlog, entity);
     }
 
 }

@@ -18,8 +18,8 @@ public class CommentBlogService {
         repository.deleteById(idCommentBlog);
     }
     
-    public CommentBlog findById(Long idCommentBlog){
-        return repository.findById(idCommentBlog).orElse(null);
+    public CommentBlog findById(long idCommentBlog) {
+        return repository.findById(idCommentBlog).orElseThrow(() -> new RuntimeException("Comment not found"));
     }
     
     public List<CommentBlog> findAll(){

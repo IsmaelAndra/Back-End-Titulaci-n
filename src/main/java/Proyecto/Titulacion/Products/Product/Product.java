@@ -1,5 +1,7 @@
 package Proyecto.Titulacion.Products.Product;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.User.User.User;
 import jakarta.persistence.Column;
@@ -14,6 +16,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @EqualsAndHashCode(callSuper = true)
 public class Product extends Audit {
     @Id

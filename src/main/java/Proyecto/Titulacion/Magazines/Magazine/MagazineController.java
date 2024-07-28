@@ -1,11 +1,20 @@
 package Proyecto.Titulacion.Magazines.Magazine;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,10 +27,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import Proyecto.Titulacion.Careers.Career.Career;
+import Proyecto.Titulacion.Careers.Career.CareerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -30,14 +42,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin({"*"})
 @Tag(name = "Controller Magazine (Revista)", description = "Table magazine")
 public class MagazineController {
+
+    private static final String UPLOAD_DIR = "uploads/";
+
+    @Autowired
+    CareerService careerService;
+
     @Autowired
     MagazineService service;
 
     @Operation(summary = "Gets an magazine for your idMagazine, requires hasAnyRole")
     @GetMapping("/{idMagazine}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public Magazine findById( @PathVariable long idMagazine ){
-        return service.findById(idMagazine);
+    public ResponseEntity<Magazine> getMagazineEntity(@PathVariable Long idMagazine){
+        Optional<Magazine> magazine = service.findById(idMagazine);
+        return magazine.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Operation(summary = "Gets all magazine, requires hasAnyRole")
@@ -47,18 +66,58 @@ public class MagazineController {
         return service.findAll();
     }
 
-    @Operation(summary = "Save an magazine, requires hasAnyRole(ADMIN)")
-    @PostMapping("/")
+    @Operation(summary = "Save a magazine with an image, requires hasAnyRole(ADMIN)")
+    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Magazine save( @RequestBody Magazine entitiy ){
-        return service.save(entitiy);
+    public ResponseEntity<Magazine> saveMagazine(
+        @RequestParam("nameMagazine") String nameMagazine,
+        @RequestParam("descriptionMagazine") String descriptionMagazine,
+        @RequestParam("idCareer") Long idCareer,
+        @RequestParam("image") MultipartFile image) {
+
+        Career career = careerService.findById(idCareer);
+
+        Magazine magazine = new Magazine();
+        magazine.setNameMagazine(nameMagazine);
+        magazine.setDescriptionMagazine(descriptionMagazine);
+        magazine.setCareer(career);
+
+        if (!image.isEmpty()) {
+            String imageUrl = saveImage(image);
+            magazine.setUrlImageMagazine(imageUrl);
+        }
+
+        Magazine savedMagazine = service.save(magazine);
+        return ResponseEntity.ok(savedMagazine);
     }
     
-    @Operation(summary = "Updates an magazine by its idMagazine, requires hasAnyRole(ADMIN)")
-    @PutMapping("/{idMagazine}/")
+    @Operation(summary = "Updates a magazine by its idMagazine, requires hasAnyRole(ADMIN)")
+    @PutMapping("/{idMagazine}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Magazine update ( @RequestBody Magazine entity){
-        return service.save(entity);
+    public ResponseEntity<Magazine> updateMagazine(
+            @PathVariable long idMagazine,
+            @RequestParam("nameMagazine") String nameMagazine,
+            @RequestParam("descriptionMagazine") String descriptionMagazine,
+            @RequestParam("idCareer") Long idCareer,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+        Optional<Magazine> optionalMagazine = service.findById(idMagazine);
+        if (optionalMagazine.isPresent()) {
+            Magazine existingMagazine = optionalMagazine.get();
+            existingMagazine.setNameMagazine(nameMagazine);
+            existingMagazine.setDescriptionMagazine(descriptionMagazine);
+            Career career = careerService.findById(idCareer);
+            existingMagazine.setCareer(career);
+
+            if (image != null && !image.isEmpty()) {
+                String imageUrl = saveImage(image);
+                existingMagazine.setUrlImageMagazine(imageUrl);
+            }
+
+            Magazine updatedMagazine = service.save(existingMagazine);
+            return ResponseEntity.ok(updatedMagazine);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Removes an magazine by its idMagazine, requires hasAnyRole(ADMIN)")
@@ -71,9 +130,14 @@ public class MagazineController {
     @Operation(summary = "Partial updates an magazine by its idMagazine, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idMagazine}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Magazine partialUpdate(@PathVariable long idMagazine, @RequestBody Map<String, Object> fields){
+    public ResponseEntity<Magazine> partialUpdate(@PathVariable long idMagazine, @RequestBody Map<String, Object> fields) {
+        Optional<Magazine> optionalMagazine = service.findById(idMagazine);
 
-        Magazine entity = findById(idMagazine);
+        if (!optionalMagazine.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Magazine entity = optionalMagazine.get();
 
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
@@ -93,7 +157,9 @@ public class MagazineController {
                 throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
-        return update(entity);
+
+        Magazine updatedMagazine = service.save(entity);
+        return ResponseEntity.ok(updatedMagazine);
     }
 
     @GetMapping("/paginated")
@@ -113,5 +179,27 @@ public class MagazineController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "idMagazine") String sortBy) {
         return service.findByNameMagazine(nameMagazine, page, size, sortBy);
+    }
+
+    @GetMapping("/stats")
+    public Map<String, Long> getMagazineStats(@RequestParam String period) {
+        return service.getMagazineStats(period);
+    }
+
+    private String saveImage(MultipartFile image) {
+        try {
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+            Path copyLocation = Paths.get(uploadPath + File.separator + fileName);
+            Files.copy(image.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            return "uploads/" + fileName; // Guarda la ruta relativa
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al guardar el archivo de imagen");
+        }
     }
 }

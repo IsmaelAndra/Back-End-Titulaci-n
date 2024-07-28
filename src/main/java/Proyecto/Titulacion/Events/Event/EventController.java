@@ -2,11 +2,18 @@ package Proyecto.Titulacion.Events.Event;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +25,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
+import Proyecto.Titulacion.User.User.User;
+import Proyecto.Titulacion.User.User.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.io.IOException;
+import java.io.File;
 
 @RestController
 @RequestMapping("/api/event")
@@ -32,13 +48,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class EventController {
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     EventService service;
 
+    private static final String UPLOAD_DIR = "uploads/";
+
     @Operation(summary = "gets an event for your idEvent, requires hasAnyRole")
-    @GetMapping("/{idEvent}/")
+    @GetMapping("/{id}/")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public Event findById( @PathVariable long idEvent ){
-        return service.findById(idEvent);
+    public ResponseEntity<Event> getEventEntity(@PathVariable Long idEvent){
+        Optional<Event> event = service.findById(idEvent);
+        return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Operation(summary = "Gets all events, requires hasAnyRole")
@@ -49,17 +71,69 @@ public class EventController {
     }
 
     @Operation(summary = "save an event, requires hasAnyRole(ADMIN)")
-    @PostMapping("/")
+    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Event save( @RequestBody Event entitiy ){
-        return service.save(entitiy);
+    public ResponseEntity<Event> saveEvent(
+        @RequestParam("titleEvent") String titleEvent,
+        @RequestParam("descriptionEvent") String descriptionEvent,
+        @RequestParam("dateEvent") LocalDate dateEvent,
+        @RequestParam("hourEvent") LocalTime hourEvent,
+        @RequestParam("placeEvent") String placeEvent,
+        @RequestParam ("image") MultipartFile image,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        String username = userDetails.getUsername();
+        User user = userService.findByUsername(username);
+        Event event = new Event();
+        event.setTitleEvent(titleEvent);
+        event.setDescriptionEvent(descriptionEvent);
+        event.setDateEvent(dateEvent);
+        event.setHourEvent(hourEvent);
+        event.setPlaceEvent(placeEvent);
+        event.setUser(user);
+
+        
+        if (!image.isEmpty()) {
+            String imageUrl = saveImage(image); 
+            event.setUrl_imageEvent(imageUrl);
+        }
+
+        Event savEvent = service.save(event);
+
+        return ResponseEntity.ok(savEvent);
     }
     
     @Operation(summary = "updates an event by its idEvent, requires hasAnyRole(ADMIN)")
-    @PutMapping("/{idEvent}/")
+    @PutMapping("/{idEvent}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Event update ( @RequestBody Event entity){
-        return service.save(entity);
+    public ResponseEntity<Event> updateEvent(
+        @PathVariable long idEvent, 
+        @RequestParam("titleEvent") String titleEvent,
+        @RequestParam("descriptionEvent") String descriptionEvent,
+        @RequestParam("dateEvent") LocalDate dateEvent,
+        @RequestParam("hourEvent") LocalTime hourEvent,
+        @RequestParam("placeEvent") String placeEvent,
+        @RequestParam(value = "image", required = false) MultipartFile image) {
+        Optional<Event> optionalEvent = service.findById(idEvent);
+        if (optionalEvent.isPresent()) {
+            Event existingEvent = optionalEvent.get();
+            existingEvent.setTitleEvent(titleEvent);
+            existingEvent.setDescriptionEvent(descriptionEvent);
+            existingEvent.setDateEvent(dateEvent);
+            existingEvent.setHourEvent(hourEvent);
+            existingEvent.setPlaceEvent(placeEvent);
+            service.save(existingEvent);
+
+            if (image != null && !image.isEmpty()) {
+                String imageUrl = saveImage(image);
+                existingEvent.setUrl_imageEvent(imageUrl);
+            }
+
+            Event updEvent = service.save(existingEvent);
+            return ResponseEntity.ok(updEvent);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "removes an event by its idEvent, requires hasAnyRole(ADMIN)")
@@ -72,9 +146,15 @@ public class EventController {
     @Operation(summary = "partial updates an events by its idEvent, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idEvent}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Event partialUpdate(@PathVariable long idEvent, @RequestBody Map<String, Object> fields){
+    public ResponseEntity<Event> partialUpdate(@PathVariable long idEvent, @RequestBody Map<String, Object> fields){
 
-        Event entity = findById(idEvent);
+        Optional<Event> optionalEvent = service.findById(idEvent);
+
+        if (!optionalEvent.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event entity = optionalEvent.get();
 
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
@@ -95,7 +175,9 @@ public class EventController {
                 throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
-        return update(entity);
+
+        Event updateEvent = service.save(entity);
+        return ResponseEntity.ok(updateEvent);
     }
 
     @GetMapping("/paginated")
@@ -115,5 +197,27 @@ public class EventController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "idEvent") String sortBy) {
         return service.findByTitleEvent(titleEvent, page, size, sortBy);
+    }
+
+    @GetMapping("/stats")
+    public Map<String, Long> getEventStats(@RequestParam String period) {
+        return service.getEventStats(period);
+    }
+
+    private String saveImage(MultipartFile image) {
+        try {
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+            Path copyLocation = Paths.get(uploadPath + File.separator + fileName);
+            Files.copy(image.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            return "uploads/" + fileName; // Guarda la ruta relativa
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al guardar el archivo de imagen");
+        }
     }
 }

@@ -1,5 +1,7 @@
 package Proyecto.Titulacion.Magazines.Magazine;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import Proyecto.Titulacion.Audit.Audit;
 import Proyecto.Titulacion.Careers.Career.Career;
 import jakarta.persistence.Column;
@@ -14,6 +16,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @EqualsAndHashCode(callSuper = true)
 public class Magazine extends Audit {
     @Id
@@ -25,6 +28,9 @@ public class Magazine extends Audit {
 
     @Column(length = 300)
     private String descriptionMagazine;
+
+    @Column
+    private String urlImageMagazine;
 
     @ManyToOne
     @JoinColumn(name = "idCareer", referencedColumnName="idCareer")
@@ -42,6 +48,10 @@ public class Magazine extends Audit {
         return descriptionMagazine;
     }
 
+    public String geturlImageMagazine(){
+        return urlImageMagazine;
+    }
+
     public Career getCareer() {
         return career;
     }
@@ -56,6 +66,10 @@ public class Magazine extends Audit {
 
     public void setDescriptionMagazine(String descriptionMagazine) {
         this.descriptionMagazine = descriptionMagazine;
+    }
+
+    public void setUrlImageMagazine(String urlImageMagazine){
+        this.urlImageMagazine = urlImageMagazine;
     }
 
     public void setCareer(Career career) {
