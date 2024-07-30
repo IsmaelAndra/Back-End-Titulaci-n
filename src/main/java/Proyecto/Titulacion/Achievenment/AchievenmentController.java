@@ -35,14 +35,12 @@ public class AchievenmentController {
 
     @Operation(summary = "gets an achievement for your idAchievement, requires hasAnyRole")
     @GetMapping("/{idAchievement}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Achievenment findById(@PathVariable long idAchievement) {
         return service.findById(idAchievement);
     }
 
     @Operation(summary = "Gets all achievements, requires hasAnyRole")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Achievenment> findAll() {
         return service.findAll();
     }

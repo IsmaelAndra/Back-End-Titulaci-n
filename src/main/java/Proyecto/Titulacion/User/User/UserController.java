@@ -119,7 +119,6 @@ public class UserController {
         return userService.findById(idUser);
     }
 
-
     @DeleteMapping("/{idUser}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Eliminar un Usuario")

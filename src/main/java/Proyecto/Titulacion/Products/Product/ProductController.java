@@ -45,19 +45,11 @@ public class ProductController {
     UserService userService;
 
     @Autowired
-    ProductImageService productImageService; // Asegúrate de tener este servicio para ProductImage
+    ProductImageService productImageService;
 
     private final String UPLOAD_DIR = "uploads/";
-
-    // @Operation(summary = "Gets a product for your idProduct, requires hasAnyRole")
-    // @GetMapping("/{idProduct}/")
-    // @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    // public Product findById(@PathVariable long idProduct) {
-    //     return service.findById(idProduct);
-    // }
-
     @Operation(summary = "Gets a product for your idProduct, requires hasAnyRole")
-    @GetMapping("/{id}")
+    @GetMapping("/{idProduct}/")
     public ResponseEntity<Product> getProductById(@PathVariable Long idProduct){
         Optional<Product> product = service.findById(idProduct);
         return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -122,53 +114,14 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
-    // @PutMapping(value = "/{idProduct}/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    // public ResponseEntity<Product> updateProduct(
-    //         @PathVariable Long idProduct,
-    //         @RequestParam("nameProduct") String nameProduct,
-    //         @RequestParam("descriptionProduct") String descriptionProduct,
-    //         @RequestParam("priceProduct") Double priceProduct,
-    //         @RequestParam(value = "images", required = false) List<MultipartFile> images,
-    //         @AuthenticationPrincipal UserDetails userDetails) {
-
-    //     Optional<Product> optionalProduct = service.findById(idProduct);
-    //     if (!optionalProduct.isPresent()) {
-    //         return ResponseEntity.notFound().build();
-    //     }
-
-    //     Product product = optionalProduct.get();
-    //     product.setNameProduct(nameProduct);
-    //     product.setDescriptionProduct(descriptionProduct);
-    //     product.setPriceProduct(priceProduct);
-
-    //     // Actualizar imágenes si se proporcionan
-    //     if (images != null && !images.isEmpty()) {
-    //         productImageService.deleteByProduct(product);
-    //         for (MultipartFile image : images) {
-    //             if (!image.isEmpty()) {
-    //                 String imageUrl = saveImage(image);
-    //                 ProductImage productImage = new ProductImage();
-    //                 productImage.setUrlProductImage(imageUrl);
-    //                 productImage.setProduct(product);
-    //                 productImageService.save(productImage);
-    //             }
-    //         }
-    //     }
-
-    //     Product updatedProduct = service.save(product);
-    //     return ResponseEntity.ok(updatedProduct);
-    // }
 
     private String saveImage(MultipartFile image) {
         try {
-            // Crear el directorio si no existe
             Path uploadPath = Paths.get(UPLOAD_DIR);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            // Guardar el archivo
             String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
             Path copyLocation = Paths.get(uploadPath + File.separator + fileName);
             Files.copy(image.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
@@ -178,13 +131,6 @@ public class ProductController {
             throw new RuntimeException("Error al guardar el archivo de imagen");
         }
     }
-
-    // @Operation(summary = "Updates a product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
-    // @PutMapping("/{idProduct}/")
-    // @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    // public Product update(@RequestBody Product entity) {
-    //     return service.save(entity);
-    // }
 
     @Operation(summary = "Removes a product by its idProduct, requires hasAnyRole(ADMIN, EMPRENDEDOR)")
     @DeleteMapping("/{idProduct}/")

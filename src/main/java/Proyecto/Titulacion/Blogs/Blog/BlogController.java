@@ -53,8 +53,7 @@ public class BlogController {
     private static final String UPLOAD_DIR = "uploads/";
 
     @Operation(summary = "get a blog by its idBlog, Requiere hasAnyRole")
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
+    @GetMapping("/{idBlog}/")
     public ResponseEntity<Blog> getBlogEntity(@PathVariable Long idBlog){
         Optional<Blog> blog = service.findById(idBlog);
         return blog.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -62,7 +61,6 @@ public class BlogController {
 
     @Operation(summary = "gets all blogs, Requiere hasAnyRole")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Blog> findAll() {
         return service.findAll();
     }
@@ -168,7 +166,6 @@ public class BlogController {
     }
 
     @GetMapping("/paginated")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Blog> findPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -177,7 +174,6 @@ public class BlogController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Blog> findByTitleBlog(
             @RequestParam String titleBlog,
             @RequestParam(defaultValue = "0") int page,
@@ -187,6 +183,7 @@ public class BlogController {
     }
 
     @GetMapping("/stats")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Map<String, Long> getBlogStats(@RequestParam String period) {
         return service.getBlogStats(period);
     }
