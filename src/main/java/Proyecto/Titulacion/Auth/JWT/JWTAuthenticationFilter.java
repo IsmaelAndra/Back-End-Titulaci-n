@@ -28,7 +28,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @SuppressWarnings("null")
     @Override
-    protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         final String token = getTokenFromRequest(request);
@@ -53,9 +53,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
                 Cookie jwtCookie = new Cookie("jwt_token", token);
                 jwtCookie.setHttpOnly(true);
-                jwtCookie.setSecure(true); // solo en HTTPS
+                jwtCookie.setSecure(true);
                 jwtCookie.setPath("/");
-                jwtCookie.setMaxAge(24 * 60 * 60); // 1 día
+                jwtCookie.setMaxAge(24 * 60 * 60);
                 response.addCookie(jwtCookie);
             }
         }

@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class UserService {
     @Autowired
@@ -21,7 +20,7 @@ public class UserService {
     public User save(User entity) {
         return userRepository.save(entity);
     }
-    
+
     public void deleteByID(long idUser) {
         userRepository.deleteById(idUser);
     }
@@ -51,28 +50,26 @@ public class UserService {
 
     public Map<String, Long> getUserStats(String period) {
         List<User> users = userRepository.findAll();
-        
+
         switch (period) {
             case "diaria":
                 return users.stream()
                         .collect(Collectors.groupingBy(
                                 p -> p.getCreatedAt().toLocalDate().plusDays(1).toString(),
-                                Collectors.counting()
-                        ));
+                                Collectors.counting()));
             case "mensual":
                 return users.stream()
                         .collect(Collectors.groupingBy(
-                                p -> p.getCreatedAt().getYear() + "-" + String.format("%02d", p.getCreatedAt().getMonthValue() + 1),
-                                Collectors.counting()
-                        ));
+                                p -> p.getCreatedAt().getYear() + "-"
+                                        + String.format("%02d", p.getCreatedAt().getMonthValue() + 1),
+                                Collectors.counting()));
             case "anual":
                 return users.stream()
                         .collect(Collectors.groupingBy(
                                 p -> String.valueOf(p.getCreatedAt().getYear() + 1),
-                                Collectors.counting()
-                        ));
+                                Collectors.counting()));
             default:
                 throw new IllegalArgumentException("Periodo Invalido: " + period);
         }
-    } 
+    }
 }

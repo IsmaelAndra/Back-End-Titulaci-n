@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @EqualsAndHashCode(callSuper = true)
 public class Blog extends Audit {
     @Id
@@ -29,7 +29,7 @@ public class Blog extends Audit {
     @Column(length = 100)
     private String subtitleBlog;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String contentBlog;
 
     @Column(length = 500)

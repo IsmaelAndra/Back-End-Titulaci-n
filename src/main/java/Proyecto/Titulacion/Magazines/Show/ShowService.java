@@ -8,28 +8,28 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-    
+
 @Service
 public class ShowService {
     @Autowired
     ShowRepository repository;
-    
-    public Show save( Show entity ){
+
+    public Show save(Show entity) {
         return repository.save(entity);
     }
-    
-    public void deleteById( Long idShow ){
+
+    public void deleteById(Long idShow) {
         repository.deleteById(idShow);
     }
-    
-    public Show findById(Long idShow){
+
+    public Show findById(Long idShow) {
         return repository.findById(idShow).orElse(null);
     }
-    
-    public List<Show> findAll(){
+
+    public List<Show> findAll() {
         return repository.findAll();
     }
-    
+
     public Page<Show> findPaginated(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         return repository.findAll(pageable);

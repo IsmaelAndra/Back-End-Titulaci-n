@@ -25,9 +25,9 @@ public class Trend extends Audit {
     private String descriptionTrend;
 
     @ManyToOne
-    @JoinColumn(name = "idMagazine", referencedColumnName="idMagazine")
+    @JoinColumn(name = "idMagazine", referencedColumnName = "idMagazine")
     private Magazine magazine;
-    
+
     public long getIdTrend() {
         return idTrend;
     }

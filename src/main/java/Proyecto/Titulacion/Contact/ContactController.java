@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/contact")
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @Tag(name = "Controller Contact (contacto)", description = "Tabla contact")
 public class ContactController {
 
@@ -37,7 +37,7 @@ public class ContactController {
     @Operation(summary = "gets an contact for your idContact, requires hasAnyRole")
     @GetMapping("/{idContact}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Contact findById( @PathVariable long idContact ){
+    public Contact findById(@PathVariable long idContact) {
         return service.findById(idContact);
     }
 
@@ -48,30 +48,30 @@ public class ContactController {
         return service.findAll();
     }
 
-    @Operation(summary = "save an contact, requires hasAnyRole(USER, EMPRENDEDOR)")
+    @Operation(summary = "Save an contact")
     @PostMapping("/")
-    @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
-    public Contact save( @RequestBody Contact entitiy ){
+    public Contact save(@RequestBody Contact entitiy) {
         return service.save(entitiy);
     }
-    
-    @Operation(summary = "updates an achievement by its idContact, requires hasAnyRole(ADMIN)")
+
+    @Operation(summary = "Updates an achievement by its idContact, requires hasAnyRole(ADMIN)")
     @PutMapping("/{idContact}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Contact update ( @RequestBody Contact entity){
+    public Contact update(@RequestBody Contact entity) {
         return service.save(entity);
     }
-    @Operation(summary = "removes an contact by its idContact, requires hasAnyRole(ADMIN)")
+
+    @Operation(summary = "Removes an contact by its idContact, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idContact}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idContact ){
+    public void deleteById(@PathVariable long idContact) {
         service.deleteById(idContact);
     }
 
-    @Operation(summary = "partial updates an contacts by its idContact, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Partial updates an contacts by its idContact, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idContact}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Contact partialUpdate(@PathVariable long idContact, @RequestBody Map<String, Object> fields){
+    public Contact partialUpdate(@PathVariable long idContact, @RequestBody Map<String, Object> fields) {
 
         Contact entity = findById(idContact);
 
@@ -97,6 +97,7 @@ public class ContactController {
         return update(entity);
     }
 
+    @Operation(summary = "Contact Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Contact> findPaginated(
@@ -106,6 +107,7 @@ public class ContactController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Contact")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Contact> findByNameContact(

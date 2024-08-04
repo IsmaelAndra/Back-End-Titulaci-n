@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Proyecto.Titulacion.Products.Product.Product;
-    
+
 @Service
 public class ProductImageService {
     @Autowired
@@ -15,16 +15,16 @@ public class ProductImageService {
     public ProductImage save(ProductImage entity) {
         return repository.save(entity);
     }
-    
-    public void deleteById( Long idProductImage ){
+
+    public void deleteById(Long idProductImage) {
         repository.deleteById(idProductImage);
     }
-    
-    public ProductImage findById(Long idProductImage){
+
+    public ProductImage findById(Long idProductImage) {
         return repository.findById(idProductImage).orElse(null);
     }
-    
-    public List<ProductImage> findAll(){
+
+    public List<ProductImage> findAll() {
         return repository.findAll();
     }
 

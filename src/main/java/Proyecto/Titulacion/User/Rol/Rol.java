@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(name="rol")
+@Table(name = "rol")
 public class Rol extends Audit {
     public static final String USER = "USER";
     public static final String ADMIN = "ADMIN";
@@ -29,10 +29,10 @@ public class Rol extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private long idRol;
-    
+
     @Column(length = 30)
     private String nameRol;
-    
+
     @Column(length = 100)
     private String descriptionRol;
 

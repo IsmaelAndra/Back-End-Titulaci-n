@@ -27,7 +27,7 @@ public class Show extends Audit {
     private String urlImageShow;
 
     @ManyToOne
-    @JoinColumn(name = "idMagazine", referencedColumnName="idMagazine")
+    @JoinColumn(name = "idMagazine", referencedColumnName = "idMagazine")
     private Magazine magazine;
 
     public long getIdShow() {

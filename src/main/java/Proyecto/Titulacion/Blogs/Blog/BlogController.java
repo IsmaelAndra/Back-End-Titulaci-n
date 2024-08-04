@@ -40,8 +40,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/blog")
-@CrossOrigin({"*"})
-@Tag(name = "Controller blog", description = "Table blogs")
+@CrossOrigin({ "*" })
+@Tag(name = "Controller Blog", description = "Table Blogs")
 public class BlogController {
 
     @Autowired
@@ -52,33 +52,33 @@ public class BlogController {
 
     private static final String UPLOAD_DIR = "uploads/";
 
-    @Operation(summary = "get a blog by its idBlog, Requiere hasAnyRole")
+    @Operation(summary = "Get a blog by its idBlog")
     @GetMapping("/{idBlog}/")
-    public ResponseEntity<Blog> getBlogEntity(@PathVariable Long idBlog){
+    public ResponseEntity<Blog> getBlogEntity(@PathVariable Long idBlog) {
         Optional<Blog> blog = service.findById(idBlog);
         return blog.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "gets all blogs, Requiere hasAnyRole")
+    @Operation(summary = "Gets all blogs")
     @GetMapping("/")
     public List<Blog> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "save a blog, Requiere hasAnyRole")
+    @Operation(summary = "Save a blog, Requiere hasAnyRole")
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ResponseEntity<Blog> saveBlog(
-        @RequestParam("titleBlog") String titleBlog,
-        @RequestParam("subtitleBlog") String subtitleBlog,
-        @RequestParam("contentBlog") String contentBlog,
-        @RequestParam ("image") MultipartFile image,
-        @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestParam("titleBlog") String titleBlog,
+            @RequestParam("subtitleBlog") String subtitleBlog,
+            @RequestParam("contentBlog") String contentBlog,
+            @RequestParam("image") MultipartFile image,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         String username = userDetails.getUsername();
         User user = userService.findByUsername(username);
         Blog blog = new Blog();
-        blog.setTitleBlog(subtitleBlog);
+        blog.setTitleBlog(titleBlog);
         blog.setSubtitleBlog(subtitleBlog);
         blog.setContentBlog(contentBlog);
         blog.setUser(user);
@@ -92,16 +92,16 @@ public class BlogController {
 
         return ResponseEntity.ok(saveBlog);
     }
-    
-    @Operation(summary = "updates an blog by its idBlog, Requiere hasAnyRole")
-    @PutMapping("/{idBlog}")
+
+    @Operation(summary = "Updates an blog by its idBlog, Requiere hasAnyRole")
+    @PutMapping("/{idBlog}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ResponseEntity<Blog> updateBlog(
             @PathVariable long idBlog,
             @RequestParam("titleBlog") String titleBlog,
             @RequestParam("subtitleBlog") String subtitleBlog,
             @RequestParam("contentBlog") String contentBlog,
-            @RequestParam(value = "image", required = false) MultipartFile image){
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         Optional<Blog> optionalBlog = service.findById(idBlog);
         if (optionalBlog.isPresent()) {
             Blog existingBlog = optionalBlog.get();
@@ -122,17 +122,17 @@ public class BlogController {
         }
     }
 
-    @Operation(summary = "removes a blog by its idBlog, Requiere hasAnyRole")
+    @Operation(summary = "Removes a blog by its idBlog, Requiere hasAnyRole")
     @DeleteMapping("/{idBlog}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public void deleteById( @PathVariable long idBlog ){
+    public void deleteById(@PathVariable long idBlog) {
         service.deleteById(idBlog);
     }
 
-    @Operation(summary = "partial update an blog by its idBlog, Requiere hasAnyRole")
+    @Operation(summary = "Partial update an blog by its idBlog, Requiere hasAnyRole")
     @PatchMapping("/{idBlog}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public ResponseEntity<Blog> partialUpdate(@PathVariable long idBlog, @RequestBody Map<String, Object> fields){
+    public ResponseEntity<Blog> partialUpdate(@PathVariable long idBlog, @RequestBody Map<String, Object> fields) {
         Optional<Blog> optionalBlog = service.findById(idBlog);
 
         if (!optionalBlog.isPresent()) {
@@ -165,23 +165,26 @@ public class BlogController {
         return ResponseEntity.ok(updateBlog);
     }
 
+    @Operation(summary = "Blog Pagination")
     @GetMapping("/paginated")
     public Page<Blog> findPaginated(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "idBlog") String sortBy) {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for blog")
     @GetMapping("/search")
     public Page<Blog> findByTitleBlog(
             @RequestParam String titleBlog,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "idBlog") String sortBy) {
         return service.findByTitleBlog(titleBlog, page, size, sortBy);
     }
 
+    @Operation(summary = "Daily, monthly and yearly blog statistics.")
     @GetMapping("/stats")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Map<String, Long> getBlogStats(@RequestParam String period) {
@@ -198,7 +201,7 @@ public class BlogController {
             String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
             Path copyLocation = Paths.get(uploadPath + File.separator + fileName);
             Files.copy(image.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-            return "uploads/" + fileName; // Guarda la ruta relativa
+            return "uploads/" + fileName;
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Error al guardar el archivo de imagen");

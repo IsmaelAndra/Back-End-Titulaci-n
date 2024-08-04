@@ -27,52 +27,50 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/studyPlan")
-@CrossOrigin({"*"})
-@Tag(name = "Controller Study plan (plan de estudios)", description = "Tabla styPlan")
+@CrossOrigin({ "*" })
+@Tag(name = "Controller Study plan (Plan de Estudios)", description = "Tabla Study Plan")
 public class StudyPlanController {
 
     @Autowired
     StudyPlanService service;
 
-    @Operation(summary = "gets an study plan for your idStudyPlan, requires hasAnyRole")
+    @Operation(summary = "Gets an study plan for your idStudyPlan")
     @GetMapping("/{idStudyPlan}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public StudyPlan findById( @PathVariable long idStudyPlan ){
+    public StudyPlan findById(@PathVariable long idStudyPlan) {
         return service.findById(idStudyPlan);
     }
 
-    @Operation(summary = "Gets all study plans, requires hasAnyRole")
+    @Operation(summary = "Gets all study plans")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<StudyPlan> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "save an study plan, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Save an study plan, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public StudyPlan save( @RequestBody StudyPlan entitiy ){
+    public StudyPlan save(@RequestBody StudyPlan entitiy) {
         return service.save(entitiy);
     }
-    
-    @Operation(summary = "updates an study plan by its idStudyPlan, requires hasAnyRole(ADMIN)")
+
+    @Operation(summary = "Updates an study plan by its idStudyPlan, requires hasAnyRole(ADMIN)")
     @PutMapping("/{idStudyPlan}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public StudyPlan update ( @RequestBody StudyPlan entity){
+    public StudyPlan update(@RequestBody StudyPlan entity) {
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an study plan by its idStudyPlan, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Removes an study plan by its idStudyPlan, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idStudyPlan}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idStudyPlan ){
+    public void deleteById(@PathVariable long idStudyPlan) {
         service.deleteById(idStudyPlan);
     }
 
-    @Operation(summary = "partial updates an study plan by its idStudyPlan, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Partial updates an study plan by its idStudyPlan, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idStudyPlan}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public StudyPlan partialUpdate(@PathVariable long idStudyPlan, @RequestBody Map<String, Object> fields){
+    public StudyPlan partialUpdate(@PathVariable long idStudyPlan, @RequestBody Map<String, Object> fields) {
 
         StudyPlan entity = findById(idStudyPlan);
 
@@ -98,6 +96,7 @@ public class StudyPlanController {
         return update(entity);
     }
 
+    @Operation(summary = "Study Plan Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<StudyPlan> findPaginated(
@@ -107,6 +106,7 @@ public class StudyPlanController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Study Plan")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<StudyPlan> findByNameStudyPlan(

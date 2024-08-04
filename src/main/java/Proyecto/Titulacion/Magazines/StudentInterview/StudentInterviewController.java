@@ -27,52 +27,51 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/studentInterview")
-@CrossOrigin({"*"})
-@Tag(name = "Controller student interview (entrevista estudiantil)", description = "Tabla studentInterview")
+@CrossOrigin({ "*" })
+@Tag(name = "Controller Student Interview (Entrevista Estudiantil)", description = "Tabla Student Interview")
 public class StudentInterviewController {
 
     @Autowired
     StudentInterviewService service;
 
-    @Operation(summary = "Gets an student interview for your idStudentInterview, requires hasAnyRole")
+    @Operation(summary = "Gets an student interview for your idStudentInterview")
     @GetMapping("/{idStudentInterview}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public StudentInterview findById( @PathVariable long idStudentInterview ){
+    public StudentInterview findById(@PathVariable long idStudentInterview) {
         return service.findById(idStudentInterview);
     }
 
-    @Operation(summary = "Gets all student interview, requires hasAnyRole")
+    @Operation(summary = "Gets all student interview")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<StudentInterview> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "save an student interview, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Save an student interview, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public StudentInterview save( @RequestBody StudentInterview entitiy ){
+    public StudentInterview save(@RequestBody StudentInterview entitiy) {
         return service.save(entitiy);
     }
-    
-    @Operation(summary = "updates an student interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
+
+    @Operation(summary = "Updates an student interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
     @PutMapping("/{idStudentInterview}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public StudentInterview update ( @RequestBody StudentInterview entity){
+    public StudentInterview update(@RequestBody StudentInterview entity) {
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an studdent interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Removes an student interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idStudentInterview}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idStudentInterview ){
+    public void deleteById(@PathVariable long idStudentInterview) {
         service.deleteById(idStudentInterview);
     }
 
-    @Operation(summary = "partial updates an student interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Partial updates an student interview by its idStudentInterview, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idStudentInterview}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public StudentInterview partialUpdate(@PathVariable long idStudentInterview, @RequestBody Map<String, Object> fields){
+    public StudentInterview partialUpdate(@PathVariable long idStudentInterview,
+            @RequestBody Map<String, Object> fields) {
 
         StudentInterview entity = findById(idStudentInterview);
 
@@ -98,6 +97,7 @@ public class StudentInterviewController {
         return update(entity);
     }
 
+    @Operation(summary = "Student Interview Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<StudentInterview> findPaginated(
@@ -107,6 +107,7 @@ public class StudentInterviewController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Student Interview")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<StudentInterview> findByNameStudentInterview(

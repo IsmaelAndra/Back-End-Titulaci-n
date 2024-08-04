@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @EqualsAndHashCode(callSuper = true)
 public class Magazine extends Audit {
     @Id
@@ -33,7 +33,7 @@ public class Magazine extends Audit {
     private String urlImageMagazine;
 
     @ManyToOne
-    @JoinColumn(name = "idCareer", referencedColumnName="idCareer")
+    @JoinColumn(name = "idCareer", referencedColumnName = "idCareer")
     private Career career;
 
     public long getIdMagazine() {
@@ -48,7 +48,7 @@ public class Magazine extends Audit {
         return descriptionMagazine;
     }
 
-    public String geturlImageMagazine(){
+    public String geturlImageMagazine() {
         return urlImageMagazine;
     }
 
@@ -68,7 +68,7 @@ public class Magazine extends Audit {
         this.descriptionMagazine = descriptionMagazine;
     }
 
-    public void setUrlImageMagazine(String urlImageMagazine){
+    public void setUrlImageMagazine(String urlImageMagazine) {
         this.urlImageMagazine = urlImageMagazine;
     }
 

@@ -23,6 +23,9 @@ public class CommentBlog extends Audit {
     @Column(length = 100)
     private String contentCommentBlog;
 
+    @Column(length = 100)
+    private String usernameCommentBlog;
+
     @ManyToOne
     @JoinColumn(name = "idBlog", referencedColumnName = "idBlog")
     private Blog blog;
@@ -35,6 +38,10 @@ public class CommentBlog extends Audit {
         return contentCommentBlog;
     }
 
+    public String getUsernameCommentBlog() {
+        return usernameCommentBlog;
+    }
+
     public Blog getBlog() {
         return blog;
     }
@@ -45,6 +52,10 @@ public class CommentBlog extends Audit {
 
     public void setContentCommentBlog(String contentCommentBlog) {
         this.contentCommentBlog = contentCommentBlog;
+    }
+
+    public void setUsernameCommentBlog(String usernameCommentBlog) {
+        this.usernameCommentBlog = usernameCommentBlog;
     }
 
     public void setBlog(Blog blog) {

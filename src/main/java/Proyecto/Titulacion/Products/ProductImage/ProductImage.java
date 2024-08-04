@@ -19,7 +19,7 @@ public class ProductImage extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idProductImage;
-    
+
     @Column(length = 255)
     private String urlProductImage;
 

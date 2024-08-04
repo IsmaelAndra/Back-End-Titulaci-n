@@ -28,45 +28,45 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api/achievenment")
 @CrossOrigin({ "*" })
-@Tag(name = "Controller achievenment (Logros)", description = "Table achievements")
+@Tag(name = "Controller Achievenment (Logros)", description = "Table Achievements")
 public class AchievenmentController {
     @Autowired
     AchievenmentService service;
 
-    @Operation(summary = "gets an achievement for your idAchievement, requires hasAnyRole")
+    @Operation(summary = "Gets an achievement for your idAchievement")
     @GetMapping("/{idAchievement}/")
     public Achievenment findById(@PathVariable long idAchievement) {
         return service.findById(idAchievement);
     }
 
-    @Operation(summary = "Gets all achievements, requires hasAnyRole")
+    @Operation(summary = "Gets all achievements")
     @GetMapping("/")
     public List<Achievenment> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "save an achievement, requires hasAnyRole")
+    @Operation(summary = "Save an achievement, requires hasAnyRole")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Achievenment save(@RequestBody Achievenment entitiy) {
         return service.save(entitiy);
     }
 
-    @Operation(summary = "updates an achievement by its idAchievement, requires hasAnyRole")
+    @Operation(summary = "Updates an achievement by its idAchievement, requires hasAnyRole")
     @PutMapping("/{idAchievement}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Achievenment update(@RequestBody Achievenment entity) {
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an achievement by its idAchievement, requires hasAnyRole")
+    @Operation(summary = "Removes an achievement by its idAchievement, requires hasAnyRole")
     @DeleteMapping("/{idAchievement}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public void deleteById(@PathVariable long idAchievement) {
         service.deleteById(idAchievement);
     }
 
-    @Operation(summary = "partial update an achievement by its idAchievement, requires hasAnyRole")
+    @Operation(summary = "Partial update an achievement by its idAchievement, requires hasAnyRole")
     @PatchMapping("/{idAchievement}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public Achievenment partialUpdate(@PathVariable long idAchievement, @RequestBody Map<String, Object> fields) {
@@ -95,6 +95,7 @@ public class AchievenmentController {
         return update(entity);
     }
 
+    @Operation(summary = "Achievement Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Achievenment> findPaginated(
@@ -104,6 +105,7 @@ public class AchievenmentController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for achievements")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Achievenment> findByNameAchievement(

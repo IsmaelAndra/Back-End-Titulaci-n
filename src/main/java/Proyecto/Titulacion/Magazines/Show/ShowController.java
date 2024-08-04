@@ -33,16 +33,14 @@ public class ShowController {
     @Autowired
     ShowService service;
 
-    @Operation(summary = "Gets an show for your idShow, requires hasAnyRole")
+    @Operation(summary = "Gets an show for your idShow")
     @GetMapping("/{idShow}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Show findById(@PathVariable long idShow) {
         return service.findById(idShow);
     }
 
-    @Operation(summary = "Gets all shows, requires hasAnyRole")
+    @Operation(summary = "Gets all shows")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Show> findAll() {
         return service.findAll();
     }
@@ -96,6 +94,7 @@ public class ShowController {
         return update(entity);
     }
 
+    @Operation(summary = "Show Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Show> findPaginated(
@@ -105,6 +104,7 @@ public class ShowController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Show")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Show> findByTitleShow(

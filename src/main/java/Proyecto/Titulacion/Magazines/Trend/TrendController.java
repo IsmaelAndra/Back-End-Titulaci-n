@@ -22,44 +22,52 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/trend")
 @CrossOrigin({"*"})
+@Tag(name = "Controller Trend (Tendencia)", description = "Tabla Trend")
 public class TrendController {
 
     @Autowired
     TrendService service;
 
+    @Operation(summary = "Gets an Trend for your idTrend")
     @GetMapping("/{idTrend}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Trend findById( @PathVariable long idTrend ){
         return service.findById(idTrend);
     }
 
+    @Operation(summary = "Gets all Trend")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Trend> findAll() {
         return service.findAll();
     }
 
+    @Operation(summary = "Save an Trend, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Trend save( @RequestBody Trend entitiy ){
         return service.save(entitiy);
     }
     
+    @Operation(summary = "Updates an Trend by its idTrend, requires hasAnyRole(ADMIN)")
     @PutMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Trend update ( @RequestBody Trend entity){
         return service.save(entity);
     }
 
+    @Operation(summary = "Removes an Trend by its idTrend, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idTrend}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteById( @PathVariable long idTrend ){
         service.deleteById(idTrend);
     }
 
+    @Operation(summary = "Partial updates an Trend by its idTrend, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idTrend}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Trend partialUpdate(@PathVariable long idTrend, @RequestBody Map<String, Object> fields){
@@ -88,6 +96,7 @@ public class TrendController {
         return update(entity);
     }
 
+    @Operation(summary = "Trend Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Trend> findPaginated(
@@ -97,6 +106,7 @@ public class TrendController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Trend")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Trend> findByTitleTrend(

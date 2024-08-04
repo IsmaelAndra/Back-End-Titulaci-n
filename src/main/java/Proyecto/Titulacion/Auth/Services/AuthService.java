@@ -38,8 +38,9 @@ public class AuthService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-            
-            String token = jwtService.getToken(user, user.getNameUser(), user.getLastnameUser(), user.getEmailUser(), user.getPhotoUser());
+
+            String token = jwtService.getToken(user, user.getNameUser(), user.getLastnameUser(), user.getEmailUser(),
+                    user.getPhotoUser());
 
             Cookie jwtCookie = new Cookie("jwt_token", token);
             jwtCookie.setHttpOnly(true);
@@ -86,13 +87,14 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String token = jwtService.getToken(user, user.getNameUser(), user.getLastnameUser(), user.getEmailUser(), user.getPhotoUser());
+        String token = jwtService.getToken(user, user.getNameUser(), user.getLastnameUser(), user.getEmailUser(),
+                user.getPhotoUser());
 
         return AuthResponse.builder()
                 .token(token)
                 .build();
     }
-    
+
     public boolean verifyCode(String username, String verificationCode) {
         Optional<User> userOpt = userRepository.findByUsername(username);
         if (userOpt.isPresent()) {

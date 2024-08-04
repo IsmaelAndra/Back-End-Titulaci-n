@@ -19,12 +19,12 @@ public class ProductComment extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idProductComment;
-    
+
     @Column(length = 100)
     private String contentProductComment;
 
     @ManyToOne
-    @JoinColumn(name = "idProduct", referencedColumnName="idProduct")
+    @JoinColumn(name = "idProduct", referencedColumnName = "idProduct")
     private Product product;
 
     public long getIdProductComment() {

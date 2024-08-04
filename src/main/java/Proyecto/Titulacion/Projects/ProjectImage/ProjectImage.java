@@ -24,7 +24,7 @@ public class ProjectImage extends Audit {
     private String urlProjectImage;
 
     @ManyToOne
-    @JoinColumn(name = "idStudentProject", referencedColumnName="idStudentProject")
+    @JoinColumn(name = "idStudentProject", referencedColumnName = "idStudentProject")
     private StudentProject studentProyect;
 
     public long getIdProjectImage() {
@@ -49,5 +49,5 @@ public class ProjectImage extends Audit {
 
     public void setStudentProyect(StudentProject studentProyect) {
         this.studentProyect = studentProyect;
-    }        
+    }
 }

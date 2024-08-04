@@ -28,15 +28,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api/career")
 @CrossOrigin({"*"})
-@Tag(name = "Controller of careers", description = "Tabla career")
+@Tag(name = "Controller Careers (Carreras)", description = "Tabla Career")
 public class CareerController {
 
     @Autowired
     CareerService service;
 
-    @Operation(summary = "gets an career for your idCareer, requires hasAnyRole")
+    @Operation(summary = "Gets an career for your idCareer")
     @GetMapping("/{idCareer}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Career findById( @PathVariable long idCareer ){
         return service.findById(idCareer);
     }
@@ -47,28 +46,28 @@ public class CareerController {
         return service.findAll();
     }
 
-    @Operation(summary = "save an career, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Save an career, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Career save( @RequestBody Career entitiy ){
         return service.save(entitiy);
     }
     
-    @Operation(summary = "updates an career by its idCareer, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Updates an career by its idCareer, requires hasAnyRole(ADMIN)")
     @PutMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Career update ( @RequestBody Career entity){
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an career by its idCareer, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Removes an career by its idCareer, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idCareer}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteById( @PathVariable long idCareer ){
         service.deleteById(idCareer);
     }
 
-    @Operation(summary = "partial updates an career by its idCareer, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Partial updates an career by its idCareer, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idCareer}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Career partialUpdate(@PathVariable long idCareer, @RequestBody Map<String, Object> fields){
@@ -97,6 +96,7 @@ public class CareerController {
         return update(entity);
     }
 
+    @Operation(summary = "Career Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Career> findPaginated(
@@ -106,6 +106,7 @@ public class CareerController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Career")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Career> findByNameCareer(

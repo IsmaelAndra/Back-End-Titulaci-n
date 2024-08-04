@@ -22,15 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/proyectImage")
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
+@Tag(name = "Controller Proyect Image (Imagen del Proyecto)", description = "Table Proyect Image")
 public class ProjectImageController {
     @Autowired
     ProjectImageService service;
 
+    @Operation(summary = "Gets a Proyect Image for your idProjectImage")
     @GetMapping("/{idProjectImage}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public ResponseEntity<ProjectImage> findById(@PathVariable long idProjectImage) {
         ProjectImage projectImage = service.findById(idProjectImage);
         if (projectImage != null) {
@@ -40,27 +44,30 @@ public class ProjectImageController {
         }
     }
 
+    @Operation(summary = "Gets all products")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public ResponseEntity<List<ProjectImage>> findAll() {
         List<ProjectImage> projectImages = service.findAll();
         return ResponseEntity.ok(projectImages);
     }
 
+    @Operation(summary = "Save a Proyect Image with images, requires hasAnyRole(EMPRENDEDOR)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ResponseEntity<ProjectImage> save(@RequestBody ProjectImage entity) {
         ProjectImage savedProjectImage = service.save(entity);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProjectImage);
     }
-    
-    @PutMapping("/")
+
+    @Operation(summary = "Updates a Proyect Image by its idProjectImage, requires hasAnyRole(EMPRENDEDOR)")
+    @PutMapping("/{idProjectImage}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ResponseEntity<ProjectImage> update(@RequestBody ProjectImage entity) {
         ProjectImage updatedProjectImage = service.save(entity);
         return ResponseEntity.ok(updatedProjectImage);
     }
 
+    @Operation(summary = "Removes a Proyect Image by its idProjectImage, requires hasAnyRole(ADMIN, EMPRENDEDOR)")
     @DeleteMapping("/{idProjectImage}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ResponseEntity<Void> deleteById(@PathVariable long idProjectImage) {
@@ -68,9 +75,11 @@ public class ProjectImageController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Partial updates a Proyect Image by its idProjectImage, requires hasAnyRole(EMPRENDEDOR)")
     @PatchMapping("/{idProjectImage}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public ResponseEntity<ProjectImage> partialUpdate(@PathVariable long idProjectImage, @RequestBody Map<String, Object> fields) {
+    public ResponseEntity<ProjectImage> partialUpdate(@PathVariable long idProjectImage,
+            @RequestBody Map<String, Object> fields) {
         ProjectImage entity = service.findById(idProjectImage);
         if (entity == null) {
             return ResponseEntity.notFound().build();
@@ -85,7 +94,8 @@ public class ProjectImageController {
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
             } catch (NoSuchFieldException ex) {
-                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad ProjectImage", ex);
+                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad ProjectImage",
+                        ex);
             } catch (IllegalAccessException ex) {
                 throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
             } catch (Exception ex) {

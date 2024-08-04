@@ -39,8 +39,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/magazine")
-@CrossOrigin({"*"})
-@Tag(name = "Controller Magazine (Revista)", description = "Table magazine")
+@CrossOrigin({ "*" })
+@Tag(name = "Controller Magazine (Revista)", description = "Table Magazine")
 public class MagazineController {
 
     private static final String UPLOAD_DIR = "uploads/";
@@ -51,17 +51,15 @@ public class MagazineController {
     @Autowired
     MagazineService service;
 
-    @Operation(summary = "Gets an magazine for your idMagazine, requires hasAnyRole")
+    @Operation(summary = "Gets an magazine for your idMagazine")
     @GetMapping("/{idMagazine}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public ResponseEntity<Magazine> getMagazineEntity(@PathVariable Long idMagazine){
+    public ResponseEntity<Magazine> getMagazineEntity(@PathVariable Long idMagazine) {
         Optional<Magazine> magazine = service.findById(idMagazine);
         return magazine.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Gets all magazine, requires hasAnyRole")
+    @Operation(summary = "Gets all magazine")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Magazine> findAll() {
         return service.findAll();
     }
@@ -70,10 +68,10 @@ public class MagazineController {
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Magazine> saveMagazine(
-        @RequestParam("nameMagazine") String nameMagazine,
-        @RequestParam("descriptionMagazine") String descriptionMagazine,
-        @RequestParam("idCareer") Long idCareer,
-        @RequestParam("image") MultipartFile image) {
+            @RequestParam("nameMagazine") String nameMagazine,
+            @RequestParam("descriptionMagazine") String descriptionMagazine,
+            @RequestParam("idCareer") Long idCareer,
+            @RequestParam("image") MultipartFile image) {
 
         Career career = careerService.findById(idCareer);
 
@@ -90,9 +88,9 @@ public class MagazineController {
         Magazine savedMagazine = service.save(magazine);
         return ResponseEntity.ok(savedMagazine);
     }
-    
+
     @Operation(summary = "Updates a magazine by its idMagazine, requires hasAnyRole(ADMIN)")
-    @PutMapping("/{idMagazine}")
+    @PutMapping("/{idMagazine}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Magazine> updateMagazine(
             @PathVariable long idMagazine,
@@ -123,14 +121,15 @@ public class MagazineController {
     @Operation(summary = "Removes an magazine by its idMagazine, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idMagazine}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idMagazine ){
+    public void deleteById(@PathVariable long idMagazine) {
         service.deleteById(idMagazine);
     }
 
     @Operation(summary = "Partial updates an magazine by its idMagazine, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idMagazine}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<Magazine> partialUpdate(@PathVariable long idMagazine, @RequestBody Map<String, Object> fields) {
+    public ResponseEntity<Magazine> partialUpdate(@PathVariable long idMagazine,
+            @RequestBody Map<String, Object> fields) {
         Optional<Magazine> optionalMagazine = service.findById(idMagazine);
 
         if (!optionalMagazine.isPresent()) {
@@ -150,7 +149,8 @@ public class MagazineController {
                 mapper.registerModule(new JavaTimeModule());
                 campoEntidad.set(entity, mapper.convertValue(fieldValue, campoEntidad.getType()));
             } catch (NoSuchFieldException ex) {
-                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad Magazine", ex);
+                throw new IllegalArgumentException("Campo '" + fieldName + "' no encontrado en la entidad Magazine",
+                        ex);
             } catch (IllegalAccessException ex) {
                 throw new IllegalStateException("No se puede acceder o establecer el campo '" + fieldName + "'", ex);
             } catch (Exception ex) {
@@ -162,6 +162,7 @@ public class MagazineController {
         return ResponseEntity.ok(updatedMagazine);
     }
 
+    @Operation(summary = "Magazine Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Magazine> findPaginated(
@@ -171,6 +172,7 @@ public class MagazineController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Magazine")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Magazine> findByNameMagazine(
@@ -181,6 +183,7 @@ public class MagazineController {
         return service.findByNameMagazine(nameMagazine, page, size, sortBy);
     }
 
+    @Operation(summary = "Daily, monthly and yearly Magazine statistics.")
     @GetMapping("/stats")
     public Map<String, Long> getMagazineStats(@RequestParam String period) {
         return service.getMagazineStats(period);

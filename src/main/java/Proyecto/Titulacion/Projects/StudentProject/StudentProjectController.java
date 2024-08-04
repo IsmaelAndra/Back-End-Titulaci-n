@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -32,36 +33,40 @@ public class StudentProjectController {
     @Autowired
     StudentProjectService service;
 
+    @Operation(summary = "Gets a Student Project for your idStudentProject")
     @GetMapping("/{idStudentProject}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public StudentProject findById(@PathVariable long idStudentProject) {
         return service.findById(idStudentProject);
     }
 
+    @Operation(summary = "Gets all products")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<StudentProject> findAll() {
         return service.findAll();
     }
 
+    @Operation(summary = "Save a Student Project with images, requires hasAnyRole(EMPRENDEDOR)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public StudentProject save(@RequestBody StudentProject entitiy) {
         return service.save(entitiy);
     }
 
-    @PutMapping("/")
+    @Operation(summary = "Updates a Student Project by its idStudentProject, requires hasAnyRole(EMPRENDEDOR)")
+    @PutMapping("/{idStudentProject}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public StudentProject update(@RequestBody StudentProject entity) {
         return service.save(entity);
     }
 
+    @Operation(summary = "Removes a Student Project by its idStudentProject, requires hasAnyRole(ADMIN, EMPRENDEDOR)")
     @DeleteMapping("/{idStudentProject}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public void deleteById(@PathVariable long idStudentProject) {
         service.deleteById(idStudentProject);
     }
 
+    @Operation(summary = "Partial updates a Student Project by its idStudentProject, requires hasAnyRole(EMPRENDEDOR)")
     @PatchMapping("/{idStudentProject}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public StudentProject partialUpdate(@PathVariable long idStudentProject, @RequestBody Map<String, Object> fields) {
@@ -89,6 +94,7 @@ public class StudentProjectController {
         return update(entity);
     }
 
+    @Operation(summary = "Student Project Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<StudentProject> findPaginated(
@@ -98,6 +104,7 @@ public class StudentProjectController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Student Project")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<StudentProject> findByNameStudentProject(

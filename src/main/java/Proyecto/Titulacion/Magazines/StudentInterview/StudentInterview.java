@@ -25,9 +25,9 @@ public class StudentInterview extends Audit {
 
     @Column(length = 300)
     private String contentStudentInterview;
-    
+
     @ManyToOne
-    @JoinColumn(name = "idMagazine", referencedColumnName="idMagazine")
+    @JoinColumn(name = "idMagazine", referencedColumnName = "idMagazine")
     private Magazine magazine;
 
     public long getIdStudentInterview() {

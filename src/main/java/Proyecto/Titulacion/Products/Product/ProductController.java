@@ -34,7 +34,7 @@ import java.io.File;
 
 @RestController
 @RequestMapping("/api/product")
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @Tag(name = "Controller Product (Producto)", description = "Table product")
 public class ProductController {
 
@@ -48,16 +48,16 @@ public class ProductController {
     ProductImageService productImageService;
 
     private final String UPLOAD_DIR = "uploads/";
-    @Operation(summary = "Gets a product for your idProduct, requires hasAnyRole")
+
+    @Operation(summary = "Gets a product for your idProduct")
     @GetMapping("/{idProduct}/")
-    public ResponseEntity<Product> getProductById(@PathVariable Long idProduct){
+    public ResponseEntity<Product> getProductById(@PathVariable Long idProduct) {
         Optional<Product> product = service.findById(idProduct);
         return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Gets all products, requires hasAnyRole")
+    @Operation(summary = "Gets all products")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Product> findAll() {
         return service.findAll();
     }
@@ -66,11 +66,11 @@ public class ProductController {
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
     public ResponseEntity<Product> saveProduct(
-        @RequestParam("nameProduct") String nameProduct,
-        @RequestParam("descriptionProduct") String descriptionProduct,
-        @RequestParam("priceProduct") Double priceProduct,
-        @RequestParam("images") List<MultipartFile> images,
-        @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestParam("nameProduct") String nameProduct,
+            @RequestParam("descriptionProduct") String descriptionProduct,
+            @RequestParam("priceProduct") Double priceProduct,
+            @RequestParam("images") List<MultipartFile> images,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         String username = userDetails.getUsername();
         User user = userService.findByUsername(username);
@@ -142,9 +142,10 @@ public class ProductController {
     @Operation(summary = "Partial updates a product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
     @PatchMapping("/{idProduct}/")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public ResponseEntity<Product> partialUpdate(@PathVariable long idProduct, @RequestBody Map<String, Object> fields) {
+    public ResponseEntity<Product> partialUpdate(@PathVariable long idProduct,
+            @RequestBody Map<String, Object> fields) {
         Optional<Product> optionalProduct = service.findById(idProduct);
-        
+
         if (!optionalProduct.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -174,6 +175,7 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
+    @Operation(summary = "Product Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Product> findPaginated(
@@ -183,6 +185,7 @@ public class ProductController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Product")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Product> findByNameProduct(
@@ -193,6 +196,7 @@ public class ProductController {
         return service.findByNameProduct(nameProduct, page, size, sortBy);
     }
 
+    @Operation(summary = "Daily, monthly and yearly Product statistics.")
     @GetMapping("/stats")
     public Map<String, Long> getProductStats(@RequestParam String period) {
         return service.getProductStats(period);

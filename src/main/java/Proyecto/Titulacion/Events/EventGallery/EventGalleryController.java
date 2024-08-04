@@ -27,52 +27,50 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/eventGallery")
-@CrossOrigin({"*"})
-@Tag(name = "Controller Event gallery (galeria de eventos)", description = "Tabla eventGallery")
+@CrossOrigin({ "*" })
+@Tag(name = "Controller Event Gallery (Galeria de Eventos)", description = "Tabla Event Gallery")
 public class EventGalleryController {
 
     @Autowired
     EventGalleryService service;
 
-    @Operation(summary = "gets an event gallery for your idEventGallery, requires hasAnyRole")
+    @Operation(summary = "Gets an event gallery for your idEventGallery")
     @GetMapping("/{idEventGallery}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public EventGallery findById( @PathVariable long idEventGallery ){
+    public EventGallery findById(@PathVariable long idEventGallery) {
         return service.findById(idEventGallery);
     }
 
-    @Operation(summary = "Gets all events gallery, requires hasAnyRole")
+    @Operation(summary = "Gets all events gallery")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<EventGallery> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "save an event gallery, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Save an event gallery, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public EventGallery save( @RequestBody EventGallery entitiy ){
+    public EventGallery save(@RequestBody EventGallery entitiy) {
         return service.save(entitiy);
     }
-    
-    @Operation(summary = "updates an event gallery by its idEventGallery, requires hasAnyRole(ADMIN)")
+
+    @Operation(summary = "Updates an event gallery by its idEventGallery, requires hasAnyRole(ADMIN)")
     @PutMapping("/{idEventGallery}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public EventGallery update ( @RequestBody EventGallery entity){
+    public EventGallery update(@RequestBody EventGallery entity) {
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an event gallery by its idEventGallery, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Removes an event gallery by its idEventGallery, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idEventGallery}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idEventGallery ){
+    public void deleteById(@PathVariable long idEventGallery) {
         service.deleteById(idEventGallery);
     }
 
-    @Operation(summary = "partial updates an event gallery by its idEventGallery, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Partial updates an event gallery by its idEventGallery, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idEventGallery}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public EventGallery partialUpdate(@PathVariable long idEventGallery, @RequestBody Map<String, Object> fields){
+    public EventGallery partialUpdate(@PathVariable long idEventGallery, @RequestBody Map<String, Object> fields) {
 
         EventGallery entity = findById(idEventGallery);
 
@@ -98,6 +96,7 @@ public class EventGalleryController {
         return update(entity);
     }
 
+    @Operation(summary = "Event Gallery Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<EventGallery> findPaginated(
@@ -107,6 +106,7 @@ public class EventGalleryController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Event Gallery")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<EventGallery> findByTitleEventGallery(

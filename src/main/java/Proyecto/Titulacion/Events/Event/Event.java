@@ -20,7 +20,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @EqualsAndHashCode(callSuper = true)
 public class Event extends Audit {
     @Id
@@ -40,9 +40,9 @@ public class Event extends Audit {
     private String placeEvent;
     @Column(length = 500)
     private String url_imageEvent;
-    
+
     @ManyToOne
-    @JoinColumn(name = "idUser", referencedColumnName="idUser")
+    @JoinColumn(name = "idUser", referencedColumnName = "idUser")
     private User user;
 
     public long getIdEvent() {

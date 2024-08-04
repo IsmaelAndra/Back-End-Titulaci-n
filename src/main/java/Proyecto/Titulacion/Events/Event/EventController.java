@@ -43,8 +43,8 @@ import java.io.File;
 
 @RestController
 @RequestMapping("/api/event")
-@CrossOrigin({"*"})
-@Tag(name = "Controller Event (eventos)", description = "Table event")
+@CrossOrigin({ "*" })
+@Tag(name = "Controller Event (eventos)", description = "Table Event")
 public class EventController {
 
     @Autowired
@@ -55,32 +55,30 @@ public class EventController {
 
     private static final String UPLOAD_DIR = "uploads/";
 
-    @Operation(summary = "gets an event for your idEvent, requires hasAnyRole")
-    @GetMapping("/{id}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public ResponseEntity<Event> getEventEntity(@PathVariable Long idEvent){
+    @Operation(summary = "Gets an event for your idEvent")
+    @GetMapping("/{idEvent}/")
+    public ResponseEntity<Event> getEventEntity(@PathVariable Long idEvent) {
         Optional<Event> event = service.findById(idEvent);
         return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Gets all events, requires hasAnyRole")
+    @Operation(summary = "Gets all events")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<Event> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "save an event, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Save an event, requires hasAnyRole(ADMIN)")
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Event> saveEvent(
-        @RequestParam("titleEvent") String titleEvent,
-        @RequestParam("descriptionEvent") String descriptionEvent,
-        @RequestParam("dateEvent") LocalDate dateEvent,
-        @RequestParam("hourEvent") LocalTime hourEvent,
-        @RequestParam("placeEvent") String placeEvent,
-        @RequestParam ("image") MultipartFile image,
-        @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestParam("titleEvent") String titleEvent,
+            @RequestParam("descriptionEvent") String descriptionEvent,
+            @RequestParam("dateEvent") LocalDate dateEvent,
+            @RequestParam("hourEvent") LocalTime hourEvent,
+            @RequestParam("placeEvent") String placeEvent,
+            @RequestParam("image") MultipartFile image,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         String username = userDetails.getUsername();
         User user = userService.findByUsername(username);
@@ -92,9 +90,8 @@ public class EventController {
         event.setPlaceEvent(placeEvent);
         event.setUser(user);
 
-        
         if (!image.isEmpty()) {
-            String imageUrl = saveImage(image); 
+            String imageUrl = saveImage(image);
             event.setUrl_imageEvent(imageUrl);
         }
 
@@ -102,18 +99,18 @@ public class EventController {
 
         return ResponseEntity.ok(savEvent);
     }
-    
-    @Operation(summary = "updates an event by its idEvent, requires hasAnyRole(ADMIN)")
-    @PutMapping("/{idEvent}")
+
+    @Operation(summary = "Updates an event by its idEvent, requires hasAnyRole(ADMIN)")
+    @PutMapping("/{idEvent}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Event> updateEvent(
-        @PathVariable long idEvent, 
-        @RequestParam("titleEvent") String titleEvent,
-        @RequestParam("descriptionEvent") String descriptionEvent,
-        @RequestParam("dateEvent") LocalDate dateEvent,
-        @RequestParam("hourEvent") LocalTime hourEvent,
-        @RequestParam("placeEvent") String placeEvent,
-        @RequestParam(value = "image", required = false) MultipartFile image) {
+            @PathVariable long idEvent,
+            @RequestParam("titleEvent") String titleEvent,
+            @RequestParam("descriptionEvent") String descriptionEvent,
+            @RequestParam("dateEvent") LocalDate dateEvent,
+            @RequestParam("hourEvent") LocalTime hourEvent,
+            @RequestParam("placeEvent") String placeEvent,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         Optional<Event> optionalEvent = service.findById(idEvent);
         if (optionalEvent.isPresent()) {
             Event existingEvent = optionalEvent.get();
@@ -136,17 +133,17 @@ public class EventController {
         }
     }
 
-    @Operation(summary = "removes an event by its idEvent, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Removes an event by its idEvent, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idEvent}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idEvent ){
+    public void deleteById(@PathVariable long idEvent) {
         service.deleteById(idEvent);
     }
 
-    @Operation(summary = "partial updates an events by its idEvent, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Partial updates an events by its idEvent, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idEvent}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<Event> partialUpdate(@PathVariable long idEvent, @RequestBody Map<String, Object> fields){
+    public ResponseEntity<Event> partialUpdate(@PathVariable long idEvent, @RequestBody Map<String, Object> fields) {
 
         Optional<Event> optionalEvent = service.findById(idEvent);
 
@@ -180,8 +177,8 @@ public class EventController {
         return ResponseEntity.ok(updateEvent);
     }
 
+    @Operation(summary = "Event Pagination")
     @GetMapping("/paginated")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Event> findPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -189,8 +186,8 @@ public class EventController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Event")
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<Event> findByTitleEvent(
             @RequestParam String titleEvent,
             @RequestParam(defaultValue = "0") int page,
@@ -199,6 +196,7 @@ public class EventController {
         return service.findByTitleEvent(titleEvent, page, size, sortBy);
     }
 
+    @Operation(summary = "Daily, monthly and yearly event statistics.")
     @GetMapping("/stats")
     public Map<String, Long> getEventStats(@RequestParam String period) {
         return service.getEventStats(period);

@@ -27,52 +27,51 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/academicProgram")
-@CrossOrigin({"*"})
-@Tag(name = "Controller of Program academic (programas academicos)", description = "Table program academic")
+@CrossOrigin({ "*" })
+@Tag(name = "Controller of Program Academic (Programas Academicos)", description = "Table Program Academic")
 public class AcademicProgramController {
 
     @Autowired
     AcademicProgramService service;
 
-    @Operation(summary = "gets an program academic for your idAcademicProgram, requires hasAnyRole")
+    @Operation(summary = "Gets an program academic for your idAcademicProgram")
     @GetMapping("/{idAcademicProgram}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    public AcademicProgram findById( @PathVariable long idAcademicProgram ){
+    public AcademicProgram findById(@PathVariable long idAcademicProgram) {
         return service.findById(idAcademicProgram);
     }
 
-    @Operation(summary = "Gets all programs academics, requires hasAnyRole")
+    @Operation(summary = "Gets all programs academics")
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public List<AcademicProgram> findAll() {
         return service.findAll();
     }
 
-    @Operation(summary = "save an academic program, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Save an academic program, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public AcademicProgram save( @RequestBody AcademicProgram entitiy ){
+    public AcademicProgram save(@RequestBody AcademicProgram entitiy) {
         return service.save(entitiy);
     }
-    
-    @Operation(summary = "updates an academic program by its idAcademicProgram, requires hasAnyRole(ADMIN)")
+
+    @Operation(summary = "Updates an academic program by its idAcademicProgram, requires hasAnyRole(ADMIN)")
     @PutMapping("/{idAcademicProgram}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public AcademicProgram update ( @RequestBody AcademicProgram entity){
+    public AcademicProgram update(@RequestBody AcademicProgram entity) {
         return service.save(entity);
     }
 
-    @Operation(summary = "removes an academic program by its idAcademicProgram, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Removes an academic program by its idAcademicProgram, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idAcademicProgram}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idAcademicProgram ){
+    public void deleteById(@PathVariable long idAcademicProgram) {
         service.deleteById(idAcademicProgram);
     }
 
-    @Operation(summary = "partial updates an academic program by its idAcademicProgram, requires hasAnyRole(ADMIN)")
+    @Operation(summary = "Partial updates an academic program by its idAcademicProgram, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idAcademicProgram}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public AcademicProgram partialUpdate(@PathVariable long idAcademicProgram, @RequestBody Map<String, Object> fields){
+    public AcademicProgram partialUpdate(@PathVariable long idAcademicProgram,
+            @RequestBody Map<String, Object> fields) {
 
         AcademicProgram entity = findById(idAcademicProgram);
 
@@ -98,6 +97,7 @@ public class AcademicProgramController {
         return update(entity);
     }
 
+    @Operation(summary = "Academic Program Pagination")
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<AcademicProgram> findPaginated(
@@ -107,6 +107,7 @@ public class AcademicProgramController {
         return service.findPaginated(page, size, sortBy);
     }
 
+    @Operation(summary = "Search for Academic Program")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
     public Page<AcademicProgram> findByNameAcademicProgram(

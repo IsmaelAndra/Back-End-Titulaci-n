@@ -34,23 +34,23 @@ public class UserController {
     private ImageService imageService;
 
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Crear un Usuario")
+    @Operation(summary = "Create a User")
     public ResponseEntity<User> saveUser(
-        @RequestParam("nameUser") String nameUser,
-        @RequestParam("lastnameUser") String lastnameUser,
-        @RequestParam("username") String username,
-        @RequestParam("phoneUser") Integer phoneUser,
-        @RequestParam("emailUser") String emailUser,
-        @RequestParam("password") String password,
-        @RequestParam("passVerificationUser") String passVerificationUser,
-        @RequestParam("verified") boolean verified,
-        @RequestParam("verificationCode") String verificationCode,
-        @RequestParam("rol") Rol rol,
-        @RequestParam("career") Career career,
-        @RequestParam("photoUser") MultipartFile photoUser) {
+            @RequestParam("nameUser") String nameUser,
+            @RequestParam("lastnameUser") String lastnameUser,
+            @RequestParam("username") String username,
+            @RequestParam("phoneUser") Integer phoneUser,
+            @RequestParam("emailUser") String emailUser,
+            @RequestParam("password") String password,
+            @RequestParam("passVerificationUser") String passVerificationUser,
+            @RequestParam("verified") boolean verified,
+            @RequestParam("verificationCode") String verificationCode,
+            @RequestParam("rol") Rol rol,
+            @RequestParam("career") Career career,
+            @RequestParam("photoUser") MultipartFile photoUser) {
 
         String photoUrl = imageService.saveImage(photoUser);
-        
+
         User user = new User();
         user.setNameUser(nameUser);
         user.setLastnameUser(lastnameUser);
@@ -64,33 +64,33 @@ public class UserController {
         user.setRol(rol);
         user.setCareer(career);
         user.setPhotoUser(photoUrl);
-        
+
         User savedUser = userService.save(user);
         return ResponseEntity.ok(savedUser);
     }
 
     @PutMapping(value = "/{idUser}/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Actualizar un Usuario")
+    @Operation(summary = "Update a User")
     public ResponseEntity<User> updateUser(
-        @PathVariable long idUser,
-        @RequestParam("nameUser") String nameUser,
-        @RequestParam("lastnameUser") String lastnameUser,
-        @RequestParam("username") String username,
-        @RequestParam("phoneUser") Integer phoneUser,
-        @RequestParam("emailUser") String emailUser,
-        @RequestParam("password") String password,
-        @RequestParam("passVerificationUser") String passVerificationUser,
-        @RequestParam("verified") boolean verified,
-        @RequestParam("verificationCode") String verificationCode,
-        @RequestParam("rol") Rol rol,
-        @RequestParam("career") Career career,
-        @RequestParam(value = "photoUser", required = false) MultipartFile photoUser) {
+            @PathVariable long idUser,
+            @RequestParam("nameUser") String nameUser,
+            @RequestParam("lastnameUser") String lastnameUser,
+            @RequestParam("username") String username,
+            @RequestParam("phoneUser") Integer phoneUser,
+            @RequestParam("emailUser") String emailUser,
+            @RequestParam("password") String password,
+            @RequestParam("passVerificationUser") String passVerificationUser,
+            @RequestParam("verified") boolean verified,
+            @RequestParam("verificationCode") String verificationCode,
+            @RequestParam("rol") Rol rol,
+            @RequestParam("career") Career career,
+            @RequestParam(value = "photoUser", required = false) MultipartFile photoUser) {
 
         User user = userService.findById(idUser);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
-        
+
         user.setNameUser(nameUser);
         user.setLastnameUser(lastnameUser);
         user.setUsername(username);
@@ -102,40 +102,38 @@ public class UserController {
         user.setVerificationCode(verificationCode);
         user.setRol(rol);
         user.setCareer(career);
-        
+
         if (photoUser != null && !photoUser.isEmpty()) {
             String photoUrl = imageService.saveImage(photoUser);
             user.setPhotoUser(photoUrl);
         }
-        
+
         User updatedUser = userService.save(user);
         return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping("/{idUser}/")
-    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPRENDEDOR')")
-    @Operation(summary = "Obtener un Usuario")
+    @Operation(summary = "Get a User")
     public User findUser(@PathVariable long idUser) {
         return userService.findById(idUser);
     }
 
     @DeleteMapping("/{idUser}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Eliminar un Usuario")
+    @Operation(summary = "Delete a User")
     public void deleteByID(@PathVariable long idUser) {
         userService.deleteByID(idUser);
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Obtener todos los Usuarios")
+    @Operation(summary = "Get all users")
     public List<User> findAll() {
         return userService.findAll();
     }
 
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Obtener usuarios paginados")
+    @Operation(summary = "Get paginated users")
     public Page<User> findPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -144,8 +142,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Buscar usuarios por nombre")
+    @Operation(summary = "Search users by name")
     public Page<User> findByNameUser(
             @RequestParam String nameUser,
             @RequestParam(defaultValue = "0") int page,
@@ -155,6 +152,8 @@ public class UserController {
     }
 
     @GetMapping("/stats")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Operation(summary = "Daily, monthly and yearly users statistics.")
     public Map<String, Long> getUserStats(@RequestParam String period) {
         return userService.getUserStats(period);
     }

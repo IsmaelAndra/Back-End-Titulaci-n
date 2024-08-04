@@ -29,42 +29,42 @@ public class RolController {
 
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Crear un Rol")
+    @Operation(summary = "Create a Role")
     public Rol save(@RequestBody Rol entity) {
         return rolService.save(entity);
     }
 
     @GetMapping("/{idRol}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Obtener un Rol")
+    @Operation(summary = "Get a Role")
     public Rol findRol(@PathVariable long idRol) {
         return rolService.findById(idRol);
     }
 
     @PutMapping("/{idRol}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Actualizar un Rol")
+    @Operation(summary = "Update a Role")
     public Rol update(@RequestBody Rol entity) {
         return rolService.save(entity);
     }
 
     @DeleteMapping("/{idRol}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Eliminar un Rol")
+    @Operation(summary = "Delete a Role")
     public void deleteByID(@PathVariable long idRol) {
         rolService.deleteByID(idRol);
     }
 
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Obtener todos los Roles")
+    @Operation(summary = "Get all Roles")
     public List<Rol> findAll() {
         return rolService.findAll();
     }
 
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Obtener roles paginados")
+    @Operation(summary = "Get paginated roles")
     public Page<Rol> findPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -74,7 +74,7 @@ public class RolController {
 
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Buscar roles por nombre")
+    @Operation(summary = "Search roles by name")
     public Page<Rol> findByNameRol(
             @RequestParam String nameRol,
             @RequestParam(defaultValue = "0") int page,

@@ -8,28 +8,28 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-    
+
 @Service
 public class CareerService {
     @Autowired
     CareerRepository repository;
-    
-    public Career save( Career entity ){
+
+    public Career save(Career entity) {
         return repository.save(entity);
     }
-    
-    public void deleteById( Long idCareer ){
+
+    public void deleteById(Long idCareer) {
         repository.deleteById(idCareer);
     }
-    
-    public Career findById(Long idCareer){
+
+    public Career findById(Long idCareer) {
         return repository.findById(idCareer).orElse(null);
     }
-    
-    public List<Career> findAll(){
+
+    public List<Career> findAll() {
         return repository.findAll();
     }
-    
+
     public Page<Career> findPaginated(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         return repository.findAll(pageable);
