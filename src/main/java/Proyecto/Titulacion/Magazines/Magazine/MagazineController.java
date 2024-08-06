@@ -70,10 +70,10 @@ public class MagazineController {
     public ResponseEntity<Magazine> saveMagazine(
             @RequestParam("nameMagazine") String nameMagazine,
             @RequestParam("descriptionMagazine") String descriptionMagazine,
-            @RequestParam("idCareer") Long idCareer,
+            @RequestParam("nameCareer") String nameCareer,
             @RequestParam("image") MultipartFile image) {
 
-        Career career = careerService.findById(idCareer);
+        Career career = careerService.findByNamCareer(nameCareer);
 
         Magazine magazine = new Magazine();
         magazine.setNameMagazine(nameMagazine);
@@ -96,14 +96,14 @@ public class MagazineController {
             @PathVariable long idMagazine,
             @RequestParam("nameMagazine") String nameMagazine,
             @RequestParam("descriptionMagazine") String descriptionMagazine,
-            @RequestParam("idCareer") Long idCareer,
+            @RequestParam("nameCareer") String nameCareer,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         Optional<Magazine> optionalMagazine = service.findById(idMagazine);
         if (optionalMagazine.isPresent()) {
             Magazine existingMagazine = optionalMagazine.get();
             existingMagazine.setNameMagazine(nameMagazine);
             existingMagazine.setDescriptionMagazine(descriptionMagazine);
-            Career career = careerService.findById(idCareer);
+            Career career = careerService.findByNamCareer(nameCareer);
             existingMagazine.setCareer(career);
 
             if (image != null && !image.isEmpty()) {

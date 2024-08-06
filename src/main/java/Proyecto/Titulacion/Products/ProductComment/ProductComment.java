@@ -23,6 +23,9 @@ public class ProductComment extends Audit {
     @Column(length = 100)
     private String contentProductComment;
 
+    @Column(length = 100)
+    private String usernameCommentProduct;
+
     @ManyToOne
     @JoinColumn(name = "idProduct", referencedColumnName = "idProduct")
     private Product product;
@@ -35,6 +38,10 @@ public class ProductComment extends Audit {
         return contentProductComment;
     }
 
+    public String getUsernameCommentProduct() {
+        return usernameCommentProduct;
+    }
+
     public Product getProduct() {
         return product;
     }
@@ -45,6 +52,10 @@ public class ProductComment extends Audit {
 
     public void setContentProductComment(String contentProductComment) {
         this.contentProductComment = contentProductComment;
+    }
+
+    public void setUsernameCommentProduct(String usernameCommentProduct) {
+        this.usernameCommentProduct = usernameCommentProduct;
     }
 
     public void setProduct(Product product) {

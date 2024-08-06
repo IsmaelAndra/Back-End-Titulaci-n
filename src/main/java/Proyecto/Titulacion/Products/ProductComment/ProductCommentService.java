@@ -22,6 +22,10 @@ public class ProductCommentService {
         return repository.findById(idProductComment).orElse(null);
     }
 
+    public List<ProductComment> findByProductId(Long idProduct){
+        return repository.findByProduct_IdProduct(idProduct);
+    }
+
     public List<ProductComment> findAll() {
         return repository.findAll();
     }

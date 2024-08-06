@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +25,11 @@ public class CareerService {
 
     public Career findById(Long idCareer) {
         return repository.findById(idCareer).orElse(null);
+    }
+
+    public Career findByNamCareer(String nameCareer) {
+        return repository.findByNameCareer(nameCareer)
+                .orElseThrow(() -> new UsernameNotFoundException("career not found with nameCareer: " + nameCareer));
     }
 
     public List<Career> findAll() {
