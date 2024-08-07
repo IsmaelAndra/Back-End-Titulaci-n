@@ -62,16 +62,11 @@ public class CommentBlogController {
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('USER','EMPRENDEDOR')")
     public CommentBlog save(@RequestBody CommentBlog entity) {
-        // Obtener el nombre de usuario del token JWT
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-
-        // Asociar el comentario con el blog correspondiente
         Blog blog = blogService.findById(entity.getBlog().getIdBlog())
                 .orElseThrow(() -> new RuntimeException("Blog not found"));
         entity.setBlog(blog);
-
-        // Establecer el nombre de usuario en el comentario
         entity.setUsernameCommentBlog(username);
 
         return service.save(entity);

@@ -49,4 +49,9 @@ public class Career extends Audit {
     public void setDescriptionCareer(String descriptionCareer) {
         this.descriptionCareer = descriptionCareer;
     }
+
+    public Career orElseThrow(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
+    }
 }

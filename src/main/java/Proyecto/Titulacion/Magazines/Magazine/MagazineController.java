@@ -70,15 +70,19 @@ public class MagazineController {
     public ResponseEntity<Magazine> saveMagazine(
             @RequestParam("nameMagazine") String nameMagazine,
             @RequestParam("descriptionMagazine") String descriptionMagazine,
-            @RequestParam("nameCareer") String nameCareer,
+            @RequestParam("idCareer") Long idCareer,
             @RequestParam("image") MultipartFile image) {
-
-        Career career = careerService.findByNamCareer(nameCareer);
 
         Magazine magazine = new Magazine();
         magazine.setNameMagazine(nameMagazine);
         magazine.setDescriptionMagazine(descriptionMagazine);
-        magazine.setCareer(career);
+
+        Optional<Career> careerOptional = careerService.findById(idCareer);
+        if (careerOptional.isPresent()) {
+            magazine.setCareer(careerOptional.get());
+        } else {
+            return ResponseEntity.badRequest().body(null);
+        }
 
         if (!image.isEmpty()) {
             String imageUrl = saveImage(image);
@@ -96,15 +100,20 @@ public class MagazineController {
             @PathVariable long idMagazine,
             @RequestParam("nameMagazine") String nameMagazine,
             @RequestParam("descriptionMagazine") String descriptionMagazine,
-            @RequestParam("nameCareer") String nameCareer,
+            @RequestParam("idCareer") Long idCareer,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         Optional<Magazine> optionalMagazine = service.findById(idMagazine);
         if (optionalMagazine.isPresent()) {
             Magazine existingMagazine = optionalMagazine.get();
             existingMagazine.setNameMagazine(nameMagazine);
             existingMagazine.setDescriptionMagazine(descriptionMagazine);
-            Career career = careerService.findByNamCareer(nameCareer);
-            existingMagazine.setCareer(career);
+
+            Optional<Career> careerOptional = careerService.findById(idCareer);
+            if (careerOptional.isPresent()) {
+                existingMagazine.setCareer(careerOptional.get());
+            } else {
+                return ResponseEntity.badRequest().body(null);
+            }
 
             if (image != null && !image.isEmpty()) {
                 String imageUrl = saveImage(image);

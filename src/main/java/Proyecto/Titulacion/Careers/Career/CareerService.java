@@ -1,6 +1,7 @@
 package Proyecto.Titulacion.Careers.Career;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,11 +24,11 @@ public class CareerService {
         repository.deleteById(idCareer);
     }
 
-    public Career findById(Long idCareer) {
-        return repository.findById(idCareer).orElse(null);
+    public Optional<Career> findById(Long id) {
+        return repository.findById(id);
     }
 
-    public Career findByNamCareer(String nameCareer) {
+    public Career findByNameCareer(String nameCareer) {
         return repository.findByNameCareer(nameCareer)
                 .orElseThrow(() -> new UsernameNotFoundException("career not found with nameCareer: " + nameCareer));
     }

@@ -2,10 +2,12 @@ package Proyecto.Titulacion.Careers.Career;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,14 +32,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin({"*"})
 @Tag(name = "Controller Careers (Carreras)", description = "Tabla Career")
 public class CareerController {
-
     @Autowired
     CareerService service;
 
     @Operation(summary = "Gets an career for your idCareer")
     @GetMapping("/{idCareer}/")
-    public Career findById( @PathVariable long idCareer ){
-        return service.findById(idCareer);
+    public ResponseEntity<Career> findById(@PathVariable long idCareer) {
+        Optional<Career> career = service.findById(idCareer);
+        return career.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Operation(summary = "Gets all careers")
@@ -49,30 +51,40 @@ public class CareerController {
     @Operation(summary = "Save an career, requires hasAnyRole(ADMIN)")
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Career save( @RequestBody Career entitiy ){
-        return service.save(entitiy);
+    public Career save(@RequestBody Career entity) {
+        return service.save(entity);
     }
-    
+
     @Operation(summary = "Updates an career by its idCareer, requires hasAnyRole(ADMIN)")
     @PutMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Career update ( @RequestBody Career entity){
+    public Career update(@RequestBody Career entity) {
         return service.save(entity);
     }
 
     @Operation(summary = "Removes an career by its idCareer, requires hasAnyRole(ADMIN)")
     @DeleteMapping("/{idCareer}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteById( @PathVariable long idCareer ){
-        service.deleteById(idCareer);
+    public ResponseEntity<Void> deleteById(@PathVariable long idCareer) {
+        if (service.findById(idCareer).isPresent()) {
+            service.deleteById(idCareer);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Partial updates an career by its idCareer, requires hasAnyRole(ADMIN)")
     @PatchMapping("/{idCareer}/")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Career partialUpdate(@PathVariable long idCareer, @RequestBody Map<String, Object> fields){
+    public ResponseEntity<Career> partialUpdate(@PathVariable long idCareer, @RequestBody Map<String, Object> fields) {
 
-        Career entity = findById(idCareer);
+        Optional<Career> optionalCareer = service.findById(idCareer);
+        if (!optionalCareer.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Career entity = optionalCareer.get();
 
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             String fieldName = field.getKey();
@@ -93,7 +105,7 @@ public class CareerController {
                 throw new RuntimeException("Error al actualizar el campo '" + fieldName + "'", ex);
             }
         }
-        return update(entity);
+        return ResponseEntity.ok(service.save(entity));
     }
 
     @Operation(summary = "Career Pagination")
