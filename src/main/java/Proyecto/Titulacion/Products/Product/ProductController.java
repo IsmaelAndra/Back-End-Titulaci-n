@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import Proyecto.Titulacion.Products.ProductImage.ProductImage;
-import Proyecto.Titulacion.Products.ProductImage.ProductImageService;
 import Proyecto.Titulacion.User.User.User;
 import Proyecto.Titulacion.User.User.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,10 +41,7 @@ public class ProductController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    ProductImageService productImageService;
-
-    private final String UPLOAD_DIR = "uploads/";
+    private static final String UPLOAD_DIR = "uploads/";
 
     @Operation(summary = "Gets a product for your idProduct")
     @GetMapping("/{idProduct}/")
@@ -69,7 +63,7 @@ public class ProductController {
             @RequestParam("nameProduct") String nameProduct,
             @RequestParam("descriptionProduct") String descriptionProduct,
             @RequestParam("priceProduct") Double priceProduct,
-            @RequestParam("images") List<MultipartFile> images,
+            @RequestParam("image") MultipartFile image,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         String username = userDetails.getUsername();
@@ -81,19 +75,11 @@ public class ProductController {
         product.setPriceProduct(priceProduct);
         product.setUser(user);
 
-        Product savedProduct = service.save(product);
-
-        if (!images.isEmpty()) {
-            for (MultipartFile image : images) {
-                if (!image.isEmpty()) {
-                    String imageUrl = saveImage(image);
-                    ProductImage productImage = new ProductImage();
-                    productImage.setUrlProductImage(imageUrl);
-                    productImage.setProduct(savedProduct);
-                    productImageService.save(productImage);
-                }
-            }
+        if (!image.isEmpty()) {
+           String imageUrl = saveImage(image);
+           product.setProductImage(imageUrl);
         }
+        Product savedProduct = service.save(product);
 
         return ResponseEntity.ok(savedProduct);
     }
@@ -101,15 +87,26 @@ public class ProductController {
     @Operation(summary = "Updates a product by its idProduct, requires hasAnyRole(EMPRENDEDOR)")
     @PutMapping("/{idProduct}")
     @PreAuthorize("hasAnyRole('ADMIN','EMPRENDEDOR')")
-    public ResponseEntity<Product> updateProduct(@PathVariable long idProduct, @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(
+        @PathVariable long idProduct,
+        @RequestParam("nameProduct") String nameProduct,
+        @RequestParam("descriptionProduct") String descriptionProduct,
+        @RequestParam("priceProduct") Double priceProduct,
+        @RequestParam(value = "image", required = false) MultipartFile image) {
         Optional<Product> optionalProduct = service.findById(idProduct);
         if (optionalProduct.isPresent()) {
             Product existingProduct = optionalProduct.get();
-            existingProduct.setNameProduct(product.getNameProduct());
-            existingProduct.setDescriptionProduct(product.getDescriptionProduct());
-            existingProduct.setPriceProduct(product.getPriceProduct());
-            existingProduct.setUser(product.getUser());
-            return ResponseEntity.ok(existingProduct);
+            existingProduct.setNameProduct(nameProduct);
+            existingProduct.setDescriptionProduct(descriptionProduct);
+            existingProduct.setPriceProduct(priceProduct);
+            service.save(existingProduct);
+
+            if (image !=null && !image.isEmpty()) {
+                String imageUrl = saveImage(image);
+                existingProduct.setProductImage(imageUrl);
+            }
+            Product updProduct = service.save(existingProduct);
+            return ResponseEntity.ok(updProduct);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -125,7 +122,7 @@ public class ProductController {
             String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
             Path copyLocation = Paths.get(uploadPath + File.separator + fileName);
             Files.copy(image.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-            return copyLocation.toString();
+            return "uploads/" + fileName;
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Error al guardar el archivo de imagen");

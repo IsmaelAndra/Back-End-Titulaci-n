@@ -32,6 +32,9 @@ public class Product extends Audit {
     @Column(length = 10)
     private Double priceProduct;
 
+    @Column(length = 500)
+    private String productImage;
+
     @ManyToOne
     @JoinColumn(name = "idUser", referencedColumnName = "idUser")
     private User user;
